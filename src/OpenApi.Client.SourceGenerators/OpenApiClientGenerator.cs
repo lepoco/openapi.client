@@ -4,8 +4,8 @@
 // All Rights Reserved.
 
 using Microsoft.CodeAnalysis;
-using OpenApi.Client.SourceGenerators.Clients;
-using System;
+using OpenApi.Client.SourceGenerators.Contracts;
+using OpenApi.Client.SourceGenerators.Serialization;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
@@ -19,45 +19,55 @@ namespace OpenApi.Client.SourceGenerators;
 [Generator]
 public partial class OpenApiClientGenerator : IIncrementalGenerator
 {
-    private static IncrementalValueProvider<ImmutableArray<AdditionalText>> texts;
     /// <inheritdoc />
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        IncrementalValueProvider<ImmutableArray<string>> translations = context.AdditionalTextsProvider
-                                .Where(text => text.Path.EndsWith("json",
-                                               StringComparison.OrdinalIgnoreCase))
-                                .Select((text, token) => text.GetText(token)?.ToString())
-                                .Where(text => text is not null)!
-                                .Collect<string>();
+        IncrementalValuesProvider<(string, string)> additionalFiles = context
+            .AdditionalTextsProvider.Where(a =>
+                a.Path.EndsWith("json") || a.Path.EndsWith("yml") || a.Path.EndsWith("yaml")
+            )
+            .Select((a, c) => (Path.GetFileNameWithoutExtension(a.Path), a.GetText(c)!.ToString()));
 
         context.RegisterPostInitializationOutput(i =>
         {
             i.AddSource("OpenApiClientAttribute.g.cs", OpenApiClientGenerationHelper.Attribute);
         });
 
-        IncrementalValuesProvider<OpenApiClient?> classesToGenerate = context.SyntaxProvider
-            .ForAttributeWithMetadataName(
+        IncrementalValuesProvider<OpenApiContract?> classesToGenerate = context
+            .SyntaxProvider.ForAttributeWithMetadataName(
                 "OpenApi.Client.OpenApiClientAttribute",
                 predicate: static (s, _) => true,
-                transform: static (syntaxContext, cancellationToken) => ComputeOpenApiContract(syntaxContext.SemanticModel, syntaxContext.TargetNode, cancellationToken))
+                transform: static (syntaxContext, cancellationToken) =>
+                    ComputeOpenApiContract(
+                        syntaxContext.SemanticModel,
+                        syntaxContext.TargetNode,
+                        cancellationToken
+                    )
+            )
             .Where(static m => m is not null);
 
+        IncrementalValuesProvider<(
+            OpenApiContract? Left,
+            ImmutableArray<(string, string)> Right
+        )> compilationAndFiles = classesToGenerate.Combine(additionalFiles.Collect());
 
-        // Generate source code for each found
-        context.RegisterSourceOutput(classesToGenerate,
-            static (spc, source) => Execute(source, spc));
+        context.RegisterSourceOutput(compilationAndFiles, Generate);
     }
 
-    internal static OpenApiClient? ComputeOpenApiContract(SemanticModel semanticModel, SyntaxNode node, CancellationToken cancellationToken)
+    internal static OpenApiContract? ComputeOpenApiContract(
+        SemanticModel semanticModel,
+        SyntaxNode node,
+        CancellationToken cancellationToken
+    )
     {
         if (semanticModel.GetDeclaredSymbol(node) is not INamedTypeSymbol namedSymbol)
         {
             return null;
         }
 
-        var specification = string.Empty;
-        var useDependencyInjection = false;
-        var attributes = namedSymbol.GetAttributes();
+        string specification = string.Empty;
+        SerializationTool serializationTool = SerializationTool.SystemTextJson;
+        ImmutableArray<AttributeData> attributes = namedSymbol.GetAttributes();
 
         foreach (AttributeData attribute in attributes)
         {
@@ -71,56 +81,24 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
 
                 if (attribute.ConstructorArguments.Length > 1)
                 {
-                    TypedConstant useDependencyInjectionArgument = attribute.ConstructorArguments[1];
-                    useDependencyInjection = (bool?)useDependencyInjectionArgument.Value ?? false;
+                    TypedConstant useDependencyInjectionArgument = attribute.ConstructorArguments[
+                        1
+                    ];
+
+                    if (((int?)useDependencyInjectionArgument.Value ?? 0) == 1)
+                    {
+                        serializationTool = SerializationTool.NewtonsoftJson;
+                    }
                 }
             }
         }
 
-        string className = namedSymbol.Name;
-        string namespaceName = namedSymbol.ContainingNamespace.ToString();
-        string jsonData = string.Empty;
-
-        // Access project directory (assuming generator has access)
-        string projectDirectory = Directory.GetCurrentDirectory(); // Adjust based on your environment
-
-        // Build resource path relative to project
-        string resourcePath = Path.Combine(projectDirectory, specification);
-
-        // Check if file exists
-        if (File.Exists(resourcePath))
+        return new OpenApiContract
         {
-            // Read file content
-            try
-            {
-                jsonData = File.ReadAllText(resourcePath);
-            }
-            catch
-            {
-                // ignore
-            }
-            // Pass jsonData to OpenApiClient class for processing
-            // ... (your logic to process jsonData)
-        }
-        else
-        {
-            // Handle case where file doesn't exist
-            // ... (log error, throw exception)
-        }
-
-        //var additionalFileProvider = texts.Transform(texts => texts.FirstOrDefault(file => Path.GetFileName(file.Path) == specification));
-
-        // Use the GetOutput method to get the additional file
-        //var additionalFile = additionalFileProvider.GetOutput();
-
-        //if (additionalFile == null)
-        //{
-        //    // The additional file was not found
-        //    return null;
-        //}
-
-        jsonData += resourcePath;
-
-        return new OpenApiClient(namespaceName, className, specification, useDependencyInjection, jsonData);
+            Namespace = namedSymbol.ContainingNamespace.ToString(),
+            ClassName = namedSymbol.Name,
+            OpenApiSpecification = specification.ToLower(),
+            SerializationTool = serializationTool
+        };
     }
 }

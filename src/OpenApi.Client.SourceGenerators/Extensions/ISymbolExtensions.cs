@@ -7,8 +7,8 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using Microsoft.CodeAnalysis;
 using System.Diagnostics.CodeAnalysis;
+using Microsoft.CodeAnalysis;
 
 namespace OpenApi.Client.SourceGenerators.Extensions;
 
@@ -34,7 +34,11 @@ internal static class ISymbolExtensions
     /// <returns>The fully qualified name for <paramref name="symbol"/>.</returns>
     public static string GetFullyQualifiedNameWithNullabilityAnnotations(this ISymbol symbol)
     {
-        return symbol.ToDisplayString(SymbolDisplayFormat.FullyQualifiedFormat.AddMiscellaneousOptions(SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier));
+        return symbol.ToDisplayString(
+            SymbolDisplayFormat.FullyQualifiedFormat.AddMiscellaneousOptions(
+                SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier
+            )
+        );
     }
 
     /// <summary>
@@ -85,7 +89,11 @@ internal static class ISymbolExtensions
     /// <param name="typeSymbol">The <see cref="ITypeSymbol"/> instance for the attribute type to look for.</param>
     /// <param name="attributeData">The resulting attribute, if it was found.</param>
     /// <returns>Whether or not <paramref name="symbol"/> has an attribute with the specified type.</returns>
-    public static bool TryGetAttributeWithType(this ISymbol symbol, ITypeSymbol typeSymbol, [NotNullWhen(true)] out AttributeData? attributeData)
+    public static bool TryGetAttributeWithType(
+        this ISymbol symbol,
+        ITypeSymbol typeSymbol,
+        [NotNullWhen(true)] out AttributeData? attributeData
+    )
     {
         foreach (AttributeData attribute in symbol.GetAttributes())
         {
@@ -110,7 +118,11 @@ internal static class ISymbolExtensions
     /// <param name="name">The attribute name to look for.</param>
     /// <param name="attributeData">The resulting attribute, if it was found.</param>
     /// <returns>Whether or not <paramref name="symbol"/> has an attribute with the specified name.</returns>
-    public static bool TryGetAttributeWithFullyQualifiedMetadataName(this ISymbol symbol, string name, [NotNullWhen(true)] out AttributeData? attributeData)
+    public static bool TryGetAttributeWithFullyQualifiedMetadataName(
+        this ISymbol symbol,
+        string name,
+        [NotNullWhen(true)] out AttributeData? attributeData
+    )
     {
         foreach (AttributeData attribute in symbol.GetAttributes())
         {
@@ -141,9 +153,12 @@ internal static class ISymbolExtensions
         // Handle special cases
         switch (symbol.Kind)
         {
-            case SymbolKind.Alias: return Accessibility.Private;
-            case SymbolKind.Parameter: return GetEffectiveAccessibility(symbol.ContainingSymbol);
-            case SymbolKind.TypeParameter: return Accessibility.Private;
+            case SymbolKind.Alias:
+                return Accessibility.Private;
+            case SymbolKind.Parameter:
+                return GetEffectiveAccessibility(symbol.ContainingSymbol);
+            case SymbolKind.TypeParameter:
+                return Accessibility.Private;
         }
 
         // Traverse the symbol hierarchy to determine the effective accessibility
@@ -176,8 +191,8 @@ internal static class ISymbolExtensions
     {
         Accessibility accessibility = symbol.GetEffectiveAccessibility();
 
-        return
-            accessibility == Accessibility.Public ||
-            accessibility == Accessibility.Internal && symbol.ContainingAssembly.GivesAccessTo(assembly);
+        return accessibility == Accessibility.Public
+            || accessibility == Accessibility.Internal
+                && symbol.ContainingAssembly.GivesAccessTo(assembly);
     }
 }

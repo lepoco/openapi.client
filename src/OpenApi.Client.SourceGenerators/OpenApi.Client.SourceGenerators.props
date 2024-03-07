@@ -33,6 +33,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="System.Text.Json" VersionOverride="8.0.2" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" VersionOverride="$(OpenApiClientSourceGeneratorRoslynVersion)" PrivateAssets="all" Pack="false" />
   </ItemGroup>
 

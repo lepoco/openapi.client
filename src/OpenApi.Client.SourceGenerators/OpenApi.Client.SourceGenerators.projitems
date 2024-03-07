@@ -9,7 +9,7 @@
     <Import_RootNamespace>OpenApi.Client.SourceGenerators</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="$(MSBuildThisFileDirectory)clients\OpenApiClient.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)contracts\OpenApiContract.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)extensions\ISymbolExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)extensions\ITypeSymbolExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\EquatableArray{T}.cs" />
@@ -20,12 +20,16 @@
     <Compile Include="$(MSBuildThisFileDirectory)OpenApiClientGenerator.Execute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Polyfills\GeneratorAttributeSyntaxContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Polyfills\SyntaxValueProviderExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)schema\ApiDocument.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)serialization\SerializationTool.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)OpenApi.Client.SourceGenerators.props" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="$(MSBuildThisFileDirectory)Clients\" />
     <Folder Include="$(MSBuildThisFileDirectory)Extensions\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Contracts\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Schema\" />
+    <Folder Include="$(MSBuildThisFileDirectory)Serialization\" />
   </ItemGroup>
 </Project>
