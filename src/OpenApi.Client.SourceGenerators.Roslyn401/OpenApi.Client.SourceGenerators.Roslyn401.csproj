@@ -1,0 +1,6 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <Import Project="..\OpenApi.Client.SourceGenerators\OpenApi.Client.SourceGenerators.props" />
+  <Import Project="..\OpenApi.Client.SourceGenerators\OpenApi.Client.SourceGenerators.projitems" Label="Shared" />
+
+</Project>

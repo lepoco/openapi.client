@@ -2,10 +2,12 @@
 
   <PropertyGroup>
     <RepositoryDirectory>$(MSBuildThisFileDirectory)</RepositoryDirectory>
+    <BuildToolsDirectory>$(RepositoryDirectory)build\</BuildToolsDirectory>
   </PropertyGroup>
 
   <PropertyGroup>
-    <Version>1.0.0-preview.1</Version>
+    <Version>1.0.0</Version>
+    <PackageVersion>1.0.0-preview.1</PackageVersion>
   </PropertyGroup>
 
   <PropertyGroup>
@@ -61,9 +63,8 @@
   <Choose>
     <When Condition="$(IsCoreProject)">
       <PropertyGroup>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <PackageOutputPath>$(RepositoryDirectory)bin\nupkg</PackageOutputPath>
-        <TreatWarningsAsErrors Condition="'$(Configuration)' == 'Release'">true</TreatWarningsAsErrors>
       </PropertyGroup>
     </When>
     <Otherwise>
@@ -75,8 +76,12 @@
     </Otherwise>
   </Choose>
 
+  <!-- Include PolySharp to generate polyfills for all projects (on their .NET Standard 2.x targets) -->
   <ItemGroup>
-    <PackageReference Include="Nerdbank.GitVersioning" PrivateAssets="All" />
+    <PackageReference Include="PolySharp">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>build; analyzers</IncludeAssets>
+    </PackageReference>
   </ItemGroup>
 
   <Choose>

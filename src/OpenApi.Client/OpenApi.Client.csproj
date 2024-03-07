@@ -1,9 +1,53 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
+    <TargetFrameworks>netstandard2.0;netstandard2.1;net6.0;net8.0</TargetFrameworks>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
+
+  <!-- Necessary polyfills -->
+  <PropertyGroup>
+    <PolySharpIncludeGeneratedTypes>
+      System.Diagnostics.CodeAnalysis.DoesNotReturnAttribute;
+      System.Diagnostics.CodeAnalysis.MaybeNullWhenAttribute;
+      System.Diagnostics.CodeAnalysis.MemberNotNullAttribute;
+      System.Diagnostics.CodeAnalysis.NotNullAttribute;
+      System.Diagnostics.CodeAnalysis.NotNullIfNotNullAttribute;
+      System.Diagnostics.CodeAnalysis.NotNullWhenAttribute;
+      System.Diagnostics.CodeAnalysis.RequiresUnreferencedCodeAttribute;
+      System.Diagnostics.CodeAnalysis.UnconditionalSuppressMessageAttribute;
+      System.Runtime.CompilerServices.CallerArgumentExpressionAttribute;
+      System.Runtime.CompilerServices.IsExternalInit;
+      System.Runtime.CompilerServices.SkipLocalsInitAttribute;
+    </PolySharpIncludeGeneratedTypes>
+  </PropertyGroup>
+
+  <!-- Reference the various multi-targeted versions of the source generator project (one per Roslyn version) -->
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <ProjectReference Include="..\OpenApi.Client.SourceGenerators.Roslyn401\OpenApi.Client.SourceGenerators.Roslyn401.csproj" ReferenceOutputAssembly="false" />
+    <ProjectReference Include="..\OpenApi.Client.SourceGenerators.Roslyn431\OpenApi.Client.SourceGenerators.Roslyn431.csproj" ReferenceOutputAssembly="false" />
+  </ItemGroup>
+
+  <ItemGroup Label="Package">
+
+    <!-- Include the custom .targets file to check the source generator (.NET 6 is not needed as it guarantees Roslyn 4.x) -->
+    <None Include="OpenApi.Client.targets" PackagePath="buildTransitive\netstandard2.0" Pack="true" />
+    <None Include="OpenApi.Client.targets" PackagePath="buildTransitive\netstandard2.1" Pack="true" />
+    <None Include="OpenApi.Client.targets" PackagePath="build\netstandard2.0" Pack="true" />
+    <None Include="OpenApi.Client.targets" PackagePath="build\netstandard2.1" Pack="true" />
+
+    <!--
+      Pack the source generator to the right package folders (each matching the target Roslyn version).
+      Roslyn will automatically load the highest version compatible with Roslyn's version in the SDK.
+      Also pack the code fixer along with each target analyzer, the multi-targeting take care of it.
+      Note: the code fixer is not currently multi-targeting, as there are no Roslyn APIs it needs from
+      versions later than 4.0.1. As such, we can just use a single project (without the shared project
+      and two multi-targeted ones), and pack the resulting assembly twice along with the generators.
+      Even though the fixer only references the 4.0.1 generator target, both versions export the same
+      APIs that the code fixer project needs, and Roslyn versions are also forward compatible.
+    -->
+    <None Include="..\OpenApi.Client.SourceGenerators.Roslyn401\bin\$(Configuration)\netstandard2.0\OpenApi.Client.SourceGenerators.dll" PackagePath="analyzers\dotnet\roslyn4.0\cs" Pack="true" Visible="false" />
+    <None Include="..\OpenApi.Client.SourceGenerators.Roslyn431\bin\$(Configuration)\netstandard2.0\OpenApi.Client.SourceGenerators.dll" PackagePath="analyzers\dotnet\roslyn4.3\cs" Pack="true" Visible="false" />
+  </ItemGroup>
 
 </Project>
