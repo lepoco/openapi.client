@@ -5,15 +5,24 @@
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using OpenApi.Client.SourceGenerators.Contracts;
+using OpenApi.Client.SourceGenerators.Converters;
+using OpenApi.Client.SourceGenerators.Schema;
 using System.Collections.Immutable;
 using System.Text;
-//using System.Text.Json;
 
 namespace OpenApi.Client.SourceGenerators;
 
 public partial class OpenApiClientGenerator
 {
+    private static readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+    {
+        ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() },
+        Error = (sender, args) => { args.ErrorContext.Handled = true; }
+    };
+
     internal static void Execute(OpenApiContract? clientToGenerate, SourceProductionContext context)
     {
         if (clientToGenerate is { } value)
@@ -84,7 +93,7 @@ public partial class OpenApiClientGenerator
                         return lastStatusCode;
                     }
 
-                    {{{ComputeOpenApiMethods(contract)}}}
+            {{{ComputeOpenApiMethods(contract)}}}
                 }
             }
             """;
@@ -93,18 +102,21 @@ public partial class OpenApiClientGenerator
     private static string ComputeOpenApiMethods(OpenApiContract contract)
     {
         var builder = new StringBuilder("");
+        var openApiDocument = JsonConvert.DeserializeObject<ApiDocument>(contract.ContractData, jsonSettings);
 
-        //var openApiDocument = JsonSerializer.Deserialize<ApiDocument>(contract.ContractData);
-
-        //foreach (var path in openApiDocument.Paths)
-        //{
-        //    if (path.Value.Get != null)
-        //    {
-        //        builder.AppendLine("public async Task ");
-        //        builder.Append(path.Value.Get.OperationId);
-        //        builder.Append("(){await Task.CompletedTask;}");
-        //    }
-        //}
+        foreach (var path in openApiDocument.Paths)
+        {
+            if (path.Value.Get != null)
+            {
+                builder.Append("    /// <inheritdoc/>");
+                builder.AppendLine();
+                builder.Append("    public async Task ");
+                builder.Append(PascalCaseConverter.Convert(path.Value.Get.OperationId));
+                builder.Append("Async");
+                builder.AppendLine("(CancellationToken cancellationToken){await Task.CompletedTask;}");
+                builder.AppendLine();
+            }
+        }
 
         return builder.ToString();
     }

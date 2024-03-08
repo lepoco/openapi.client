@@ -23,6 +23,10 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OpenApi.Client.SourceGenera
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "OpenApi.Client.SourceGenerators", "src\OpenApi.Client.SourceGenerators\OpenApi.Client.SourceGenerators.shproj", "{5E7F1212-A54B-40CA-98C5-1FF5CD1A1638}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{723E5DFE-E809-4C07-90CC-03F44C29E259}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApi.Client.UnitTests", "tests\OpenApi.Client.UnitTests\OpenApi.Client.UnitTests.csproj", "{87C2723A-ABC4-46B5-AF46-2F82A0BC65C2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -41,9 +45,16 @@ Global
 		{BAC41EE8-5516-4D6C-ABBC-1F66CB7ABEC3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BAC41EE8-5516-4D6C-ABBC-1F66CB7ABEC3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BAC41EE8-5516-4D6C-ABBC-1F66CB7ABEC3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87C2723A-ABC4-46B5-AF46-2F82A0BC65C2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87C2723A-ABC4-46B5-AF46-2F82A0BC65C2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87C2723A-ABC4-46B5-AF46-2F82A0BC65C2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87C2723A-ABC4-46B5-AF46-2F82A0BC65C2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{87C2723A-ABC4-46B5-AF46-2F82A0BC65C2} = {723E5DFE-E809-4C07-90CC-03F44C29E259}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A90450F-432E-450C-9FE7-4C820639466E}
