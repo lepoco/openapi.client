@@ -5,22 +5,20 @@
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using OpenApi.Client.SourceGenerators.Contracts;
 using OpenApi.Client.SourceGenerators.Converters;
 using OpenApi.Client.SourceGenerators.Schema;
 using System.Collections.Immutable;
 using System.Text;
+using System.Text.Json;
 
 namespace OpenApi.Client.SourceGenerators;
 
 public partial class OpenApiClientGenerator
 {
-    private static readonly JsonSerializerSettings jsonSettings = new JsonSerializerSettings
+    private static readonly JsonSerializerOptions jsonSettings = new JsonSerializerOptions
     {
-        ContractResolver = new DefaultContractResolver { NamingStrategy = new CamelCaseNamingStrategy() },
-        Error = (sender, args) => { args.ErrorContext.Handled = true; }
+        PropertyNameCaseInsensitive = true,
     };
 
     internal static void Execute(OpenApiContract? clientToGenerate, SourceProductionContext context)
@@ -102,15 +100,15 @@ public partial class OpenApiClientGenerator
     private static string ComputeOpenApiMethods(OpenApiContract contract)
     {
         var builder = new StringBuilder("");
-        var openApiDocument = JsonConvert.DeserializeObject<ApiDocument>(contract.ContractData, jsonSettings);
+        var openApiDocument = JsonSerializer.Deserialize<ApiDocument>(contract.ContractData, jsonSettings);
 
         foreach (var path in openApiDocument.Paths)
         {
             if (path.Value.Get != null)
             {
-                builder.Append("    /// <inheritdoc/>");
+                builder.Append("        /// <inheritdoc/>");
                 builder.AppendLine();
-                builder.Append("    public async Task ");
+                builder.Append("        public async Task ");
                 builder.Append(PascalCaseConverter.Convert(path.Value.Get.OperationId));
                 builder.Append("Async");
                 builder.AppendLine("(CancellationToken cancellationToken){await Task.CompletedTask;}");
