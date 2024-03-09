@@ -3,9 +3,9 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
+using System.Collections.Generic;
 using Microsoft.CodeAnalysis;
 using OpenApi.Client.SourceGenerators.Schema;
-using System;
 
 namespace OpenApi.Client.SourceGenerators.Contracts;
 
@@ -27,13 +27,21 @@ internal static class OpenApiContractParser
             Description = document.GetDescription() ?? string.Empty,
             License = document.GetLicense() ?? string.Empty,
             Version = document.GetVersion() ?? string.Empty,
-            Methods = Array.Empty<OpenApiMethod>(),
-            Objects = Array.Empty<OpenApiObject>(),
+            Methods = new HashSet<OpenApiMethod>(),
+            Objects = new HashSet<OpenApiObject>(),
         };
     }
 
     private static string GetAccessName(Accessibility accessibility)
     {
-        return "public";
+        return accessibility switch
+        {
+            Accessibility.Internal => "internal",
+            Accessibility.Private => "private",
+            Accessibility.Protected => "protected",
+            Accessibility.ProtectedAndInternal => "protected internal",
+            Accessibility.ProtectedOrInternal => "protected internal",
+            _ => "public"
+        };
     }
 }

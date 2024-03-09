@@ -3,6 +3,8 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
+using System.Collections.Generic;
+
 namespace OpenApi.Client.SourceGenerators.Contracts;
 
 internal sealed class OpenApiContract
@@ -21,7 +23,7 @@ internal sealed class OpenApiContract
 
     public required string ClassName { get; init; }
 
-    public required OpenApiMethod[] Methods { get; init; }
+    public required HashSet<OpenApiMethod> Methods { get; init; }
 
-    public required OpenApiObject[] Objects { get; init; }
+    public required HashSet<OpenApiObject> Objects { get; init; }
 }

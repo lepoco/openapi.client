@@ -32,6 +32,11 @@ internal sealed partial class ClientGenerator
                 {
                     return lastStatusCode;
                 }
+
+                private void ResetStatus()
+                {
+                    lastStatusCode = null;
+                }
             }
         """;
 

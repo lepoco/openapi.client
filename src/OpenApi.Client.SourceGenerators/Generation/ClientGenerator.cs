@@ -41,6 +41,7 @@ internal sealed partial class ClientGenerator(
         builder.AppendLine("}");
 
         builder.Replace("{{ContractClassName}}", contract.ClassName);
+        builder.Replace("{{ContractTitle}}", contract.Title);
         builder.Replace("{{ContractAccess}}", contract.Access);
 
         return builder.ToString();

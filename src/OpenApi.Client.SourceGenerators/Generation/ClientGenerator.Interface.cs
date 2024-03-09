@@ -12,7 +12,7 @@ internal sealed partial class ClientGenerator
     private const string InterfaceHeader = """
             /// <summary>An interface for the <c>{{ContractTitle}}</c> Open API Client.</summary>
             /// <remarks>Generated with Open API Client Source Generator. See: <see href="https://github.com/lepoco/openapi.client"/></remarks>
-            public interface I{{ContractClassName}}
+            {{ContractAccess}} interface I{{ContractClassName}}
             {
                 /// <summary>Gets the last status code from the HTTP request.</summary>
                 global::System.Net.HttpStatusCode? GetLastStatusCode();
