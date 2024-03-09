@@ -19,7 +19,7 @@ Define an Open API file as content in your  **.csproj** file.
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="OpenApi.Client" Version="1.0.0">
+    <PackageReference Include="OpenApiClient" Version="1.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>compile; build; analyzers</IncludeAssets>
     </PackageReference>
@@ -49,6 +49,10 @@ IYouTubeClient client = new YouTubeClient(new HttpClient());
 
 var subscribersCount = client.SubscribersCountAsync("mychannel", CancellationToken.None);
 ```
+
+## Known limitations
+
+Since we are using the generated internal `OpenApiAttribute` as a marker, conflicts may occur when we use `InternalsVisibleTo`.
 
 ## OpenAPI
 

@@ -31,11 +31,15 @@
 
   <ItemGroup Label="Package">
 
-    <!-- Include the custom .targets file to check the source generator (.NET 6 is not needed as it guarantees Roslyn 4.x) -->
+    <!-- Include the custom .targets file to check the source generator and apply filters -->
     <None Include="OpenApi.Client.targets" PackagePath="buildTransitive\netstandard2.0" Pack="true" />
     <None Include="OpenApi.Client.targets" PackagePath="buildTransitive\netstandard2.1" Pack="true" />
+    <None Include="OpenApi.Client.targets" PackagePath="buildTransitive\net6.0" Pack="true" />
+    <None Include="OpenApi.Client.targets" PackagePath="buildTransitive\net8.0" Pack="true" />
     <None Include="OpenApi.Client.targets" PackagePath="build\netstandard2.0" Pack="true" />
     <None Include="OpenApi.Client.targets" PackagePath="build\netstandard2.1" Pack="true" />
+    <None Include="OpenApi.Client.targets" PackagePath="build\net6.0" Pack="true" />
+    <None Include="OpenApi.Client.targets" PackagePath="build\net8.0" Pack="true" />
 
     <!-- Include external dependencies -->
     <None Include="$(NuGetPackageRoot)microsoft.bcl.asyncinterfaces\8.0.0\lib\netstandard2.0\Microsoft.Bcl.AsyncInterfaces.dll" PackagePath="analyzers\dotnet\roslyn4.0\cs" Pack="true" Visible="false" />

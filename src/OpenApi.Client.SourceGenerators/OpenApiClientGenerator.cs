@@ -3,13 +3,11 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using Microsoft.CodeAnalysis;
-using OpenApi.Client.SourceGenerators.Models;
-using OpenApi.Client.SourceGenerators.Serialization;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using Microsoft.CodeAnalysis;
 
 namespace OpenApi.Client.SourceGenerators;
 
@@ -26,6 +24,7 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
     {
         const string searchedAttribute = $"OpenApi.Client.{MarkerAttributeName}";
 
+        // TODO: Fix files
         IncrementalValuesProvider<(string, string)> additionalFiles = context
             .AdditionalTextsProvider.Where(a =>
                 a.Path.EndsWith("json") || a.Path.EndsWith("yml") || a.Path.EndsWith("yaml")
@@ -61,7 +60,7 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(compilationAndFiles, Execute);
     }
 
-    internal static RequestedClassToGenerate? ComputeClassForGeneration(
+    private static RequestedClassToGenerate? ComputeClassForGeneration(
         SemanticModel semanticModel,
         SyntaxNode node,
         CancellationToken cancellationToken
@@ -73,7 +72,7 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
         }
 
         string specification = string.Empty;
-        SerializationTool serializationTool = SerializationTool.SystemTextJson;
+        RequestedSerializationTool serializationTool = RequestedSerializationTool.SystemTextJson;
         ImmutableArray<AttributeData> attributes = namedSymbol.GetAttributes();
 
         foreach (AttributeData attribute in attributes)
@@ -94,7 +93,7 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
 
                     if (((int?)useDependencyInjectionArgument.Value ?? 0) == 1)
                     {
-                        serializationTool = SerializationTool.NewtonsoftJson;
+                        serializationTool = RequestedSerializationTool.NewtonsoftJson;
                     }
                 }
             }
@@ -108,5 +107,24 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
             SerializationTool = serializationTool,
             Access = namedSymbol.DeclaredAccessibility
         };
+    }
+
+    private enum RequestedSerializationTool
+    {
+        SystemTextJson,
+        NewtonsoftJson
+    }
+
+    private sealed class RequestedClassToGenerate
+    {
+        public required string NamespaceName { get; init; }
+
+        public required string ClassName { get; init; }
+
+        public required string SelectedFile { get; init; }
+
+        public required Accessibility Access { get; init; }
+
+        public required RequestedSerializationTool SerializationTool { get; init; }
     }
 }

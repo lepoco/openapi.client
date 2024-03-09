@@ -3,11 +3,11 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-namespace OpenApi.Client.SourceGenerators.Contracts;
+namespace OpenApi.Client.SourceGenerators.Schema;
 
-internal readonly struct OpenApiMethodProperty
+internal enum ApiDocumentVersion
 {
-    public readonly required string PropertyType { get; init; }
-
-    public readonly required string PropertyName { get; init; }
+    v1_2_0,
+    v2_0_0,
+    v3_1_0
 }

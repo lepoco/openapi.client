@@ -9,11 +9,13 @@ internal readonly struct OpenApiMethod
 {
     public readonly required string Summary { get; init; }
 
-    public readonly required string Description { get; init; }
+    public readonly required string? Description { get; init; }
 
     public readonly required string DotNetMethodName { get; init; }
 
-    public readonly required OpenApiMethodVerb Verb { get; init; }
+    public readonly required string? RequestObjectType { get; init; }
 
-    public readonly required OpenApiMethodProperty[] Properties { get; init; }
+    public readonly required string? ResponseObjectType { get; init; }
+
+    public readonly required OpenApiMethodVerb Verb { get; init; }
 }

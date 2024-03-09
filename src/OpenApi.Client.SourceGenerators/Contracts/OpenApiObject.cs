@@ -3,10 +3,13 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-namespace OpenApi.Client.SourceGenerators.Serialization;
+namespace OpenApi.Client.SourceGenerators.Contracts;
 
-internal enum SerializationTool
+internal readonly struct OpenApiObject
 {
-    SystemTextJson,
-    NewtonsoftJson
+    public readonly required string Name { get; init; }
+
+    public readonly required string Description { get; init; }
+
+    public readonly required OpenApiProperty[] Properties { get; init; }
 }

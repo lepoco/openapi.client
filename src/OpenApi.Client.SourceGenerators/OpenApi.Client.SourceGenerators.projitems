@@ -10,27 +10,35 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\OpenApiContract.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)contracts\OpenApiContractParser.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)contracts\OpenApiMethod.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)contracts\OpenApiMethodProperty.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)contracts\OpenApiProperty.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)contracts\OpenApiMethodVerb.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)contracts\OpenApiObject.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\CamelCaseConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\PascalCaseConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)extensions\DiagnosticsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ISymbolExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ITypeSymbolExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)generation\ClientGeneration.Class.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)generation\ClientGeneration.Interface.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)generation\ClientGenerator.Result.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Generation\ClientGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\EquatableArray{T}.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\HashCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImmutableArrayBuilder{T}.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Models\DiagnosticInfo.cs" />
-    <Compile Include="..\OpenApi.Client.SourceGenerators\Models\RequestedClassToGenerate.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)schema\ApiDocumentVersion.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)schema\IApiDocument.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)schema\v1_2_0\ApiDocument.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Schema\v2_0_0\ApiDocument.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Schema\v3_1_0\ApiDocument.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)serialization\OpenApiSerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OpenApiClientGenerationHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OpenApiClientGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OpenApiClientGenerator.Execute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Polyfills\GeneratorAttributeSyntaxContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Polyfills\SyntaxValueProviderExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Schema\ApiDocument.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)serialization\ApiDocumentToStringConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\SerializationTool.cs" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="$(MSBuildThisFileDirectory)AnalyzerReleases.Shipped.md" />
@@ -38,5 +46,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)OpenApi.Client.SourceGenerators.props" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="$(MSBuildThisFileDirectory)Schema\v1_2_0\" />
   </ItemGroup>
 </Project>

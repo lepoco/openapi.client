@@ -3,68 +3,40 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.Text;
-using OpenApi.Client.SourceGenerators.Models;
-using OpenApi.Client.SourceGenerators.Schema;
-using OpenApi.Client.SourceGenerators.Serialization;
-using System;
 using System.Collections.Immutable;
 using System.Text;
-using System.Text.Json;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
+using OpenApi.Client.SourceGenerators.Contracts;
+using OpenApi.Client.SourceGenerators.Genertion;
+using OpenApi.Client.SourceGenerators.Schema;
+using OpenApi.Client.SourceGenerators.Serialization;
 
 namespace OpenApi.Client.SourceGenerators;
 
 public partial class OpenApiClientGenerator
 {
-    private static readonly JsonSerializerOptions jsonSettings = new JsonSerializerOptions
-    {
-        PropertyNameCaseInsensitive = true
-    };
-
-    internal static void Execute(
+    private static void Execute(
         SourceProductionContext spc,
         (
             RequestedClassToGenerate? Contract,
-            ImmutableArray<(string, string)> Files
+            ImmutableArray<(string Name, string Contents)> Files
         ) compilationAndFiles
     )
     {
-        ApiDocument? openApiDocument = default;
-        string documentFilename = "unknown";
+        OpenApiSerializer serializer = new(spc);
+        IApiDocument? openApiDocument = default;
+        string documentFilename = "UNKNOWN_DOCUMENT";
 
         if (compilationAndFiles.Contract is { } value)
         {
-            foreach ((string, string) file in compilationAndFiles.Files)
+            foreach ((string Name, string Contents) file in compilationAndFiles.Files)
             {
-                if (file.Item1.Equals(compilationAndFiles.Contract.SelectedFile))
-                {
-                    documentFilename = file.Item1;
+                documentFilename = file.Name;
 
-                    try
-                    {
-                        openApiDocument = JsonSerializer.Deserialize<ApiDocument>(
-                            file.Item2,
-                            jsonSettings
-                        );
-                    }
-                    catch (Exception e)
-                    {
-                        spc.ReportDiagnostic(
-                            Diagnostic.Create(
-                                new DiagnosticDescriptor(
-                                    id: "OAPIC001",
-                                    title: "Error",
-                                    messageFormat: e.Message,
-                                    category: "OpenApi.Client.SourceGenerators.DocumentSerializationFailed",
-                                    defaultSeverity: DiagnosticSeverity.Error,
-                                    isEnabledByDefault: true
-                                ),
-                                Location.None
-                            )
-                        );
-                        return;
-                    }
+                if (file.Name.Equals(compilationAndFiles.Contract.SelectedFile))
+                {
+                    openApiDocument = serializer.Serialize(file.Name, file.Contents);
                 }
             }
 
@@ -73,7 +45,7 @@ public partial class OpenApiClientGenerator
                 spc.ReportDiagnostic(
                     Diagnostic.Create(
                         new DiagnosticDescriptor(
-                            id: "OAPIC001",
+                            id: "OAPIC003",
                             title: "Error",
                             messageFormat: $"Document {documentFilename} is empty.",
                             category: "OpenApi.Client.SourceGenerators.DocumentEmpty",
@@ -86,16 +58,17 @@ public partial class OpenApiClientGenerator
                 return;
             }
 
-            ApiDocumentToStringConverter converter =
-                new(
-                    openApiDocument,
-                    compilationAndFiles.Contract.NamespaceName,
-                    compilationAndFiles.Contract.ClassName
-                );
+            OpenApiContract contract = OpenApiContractParser.Parse(
+                compilationAndFiles.Contract.NamespaceName,
+                compilationAndFiles.Contract.ClassName,
+                compilationAndFiles.Contract.Access,
+                openApiDocument
+            );
+            ClientGenerator generator = new(spc, contract);
 
             spc.AddSource(
                 $"{value.ClassName}.g.cs",
-                SourceText.From(converter.Convert(), Encoding.UTF8)
+                SourceText.From(generator.Generate(), Encoding.UTF8)
             );
         }
     }

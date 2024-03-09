@@ -8,4 +8,5 @@
 Rule ID | Category | Severity | Notes
 --------|----------|----------|-------
 OAPIC001 | OpenApi.Client.SourceGenerators.DocumentSerializationFailed | Error | See https://github.com/lepoco/openapi.client
-OAPIC002 | OpenApi.Client.SourceGenerators.DocumentEmpty | Error | See https://github.com/lepoco/openapi.client
+OAPIC002 | OpenApi.Client.SourceGenerators.VersionUnknown | Error | See https://github.com/lepoco/openapi.client
+OAPIC003 | OpenApi.Client.SourceGenerators.DocumentEmpty | Error | See https://github.com/lepoco/openapi.client

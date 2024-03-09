@@ -5,13 +5,9 @@
 
 namespace OpenApi.Client.SourceGenerators.Contracts;
 
-internal sealed class RequestedClass
+internal readonly struct OpenApiProperty
 {
-    public required string NamespaceName { get; init; }
+    public readonly required string PropertyType { get; init; }
 
-    public required string ClassName { get; init; }
-
-    public required RequestedClassAccess Access { get; init; }
-
-    public required SerializationTool SerializationTool { get; init; }
+    public readonly required string PropertyName { get; init; }
 }

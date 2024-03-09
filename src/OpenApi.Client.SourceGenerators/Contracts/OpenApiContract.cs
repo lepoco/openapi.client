@@ -7,7 +7,9 @@ namespace OpenApi.Client.SourceGenerators.Contracts;
 
 internal sealed class OpenApiContract
 {
-    public required string Summary { get; init; }
+    public required string Title { get; init; }
+
+    public required string Description { get; init; }
 
     public required string Version { get; init; }
 
@@ -19,9 +21,7 @@ internal sealed class OpenApiContract
 
     public required string ClassName { get; init; }
 
-    public required string InterfaceName { get; init; }
-
-    public required string ResultClassName { get; init; }
-
     public required OpenApiMethod[] Methods { get; init; }
+
+    public required OpenApiObject[] Objects { get; init; }
 }
