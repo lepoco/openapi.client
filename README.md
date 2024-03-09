@@ -55,17 +55,17 @@ var subscribersCount = client.SubscribersCountAsync("mychannel", CancellationTok
 OpenAPI specification is available at:  
 https://github.com/OAI/OpenAPI-Specification
 
+## Community Toolkit
+
+The OpenAPI Client is inspired by the MVVM Community Toolkit:  
+https://github.com/CommunityToolkit/dotnet
+
 ## Compilation
 
 Use Visual Studio 2022 and invoke the .sln.
 
 Visual Studio  
 **OpenAPI Client** is an Open Source project. You are entitled to download and use the freely available Visual Studio Community Edition to build, run or develop for OpenAPI Client. As per the Visual Studio Community Edition license, this applies regardless of whether you are an individual or a corporate user.
-
-## Community Toolkit
-
-The OpenAPI Client is inspired by the MVVM Community Toolkit.  
-https://github.com/CommunityToolkit/dotnet
 
 ## Code of Conduct
 
