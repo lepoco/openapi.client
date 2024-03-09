@@ -55,8 +55,8 @@
       disabled, and that the rest of the OpenAPI Client will still keep working as intended, just without additional features.
     -->
     <Warning Condition ="'$(OpenApiClientCurrentCompilerVersionIsNotNewEnough)' == 'true'"
-             Code="OACCFG0001"
-             HelpLink="https://aka.ms/OpenApiClient/errors/oaccfg0001"
+             Code="OAPICCFG0001"
+             HelpLink="https://aka.ms/OpenApiClient/errors/oapiccfg0001"
              Text="The OpenAPI Client source generators have been disabled on the current configuration, as they need Roslyn 4.x in order to work. The OpenAPI Client will work just fine, but features relying on the source generators will not be available."/>
   
     <PropertyGroup>
@@ -133,8 +133,8 @@
 
     <!-- Emit a warning in case packages.config is used -->
     <Warning Condition ="'$(OpenApiClientIsTargetProjectUsingPackagesConfig)' == 'true'"
-             Code="OACCFG0002"
-             HelpLink="https://aka.ms/OpenApiClient/errors/oaccfg0002"
+             Code="OAPICCFG0002"
+             HelpLink="https://aka.ms/OpenApiClient/errors/oapiccfg0002"
              Text="The OpenAPI Client source generators might not be loaded correctly, as the current project is using the packages.config setup to restore NuGet packages. Source generators require PackageReference to be used (either in a legacy-style or SDK-style .csproj project, both are supported as long as PackageReference is used)."/>
   </Target>
 

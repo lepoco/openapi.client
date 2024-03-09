@@ -4,7 +4,7 @@
 // All Rights Reserved.
 
 using Microsoft.CodeAnalysis;
-using OpenApi.Client.SourceGenerators.Contracts;
+using OpenApi.Client.SourceGenerators.Models;
 using OpenApi.Client.SourceGenerators.Serialization;
 using System.Collections.Immutable;
 using System.IO;
@@ -19,26 +19,33 @@ namespace OpenApi.Client.SourceGenerators;
 [Generator]
 public partial class OpenApiClientGenerator : IIncrementalGenerator
 {
+    private const string MarkerAttributeName = "OpenApiClientAttribute";
+
     /// <inheritdoc />
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
+        const string searchedAttribute = $"OpenApi.Client.{MarkerAttributeName}";
+
         IncrementalValuesProvider<(string, string)> additionalFiles = context
             .AdditionalTextsProvider.Where(a =>
                 a.Path.EndsWith("json") || a.Path.EndsWith("yml") || a.Path.EndsWith("yaml")
             )
-            .Select((a, c) => (Path.GetFileNameWithoutExtension(a.Path), a.GetText(c)!.ToString()));
+            .Select(
+                (a, c) =>
+                    (Path.GetFileNameWithoutExtension(a.Path).ToLower(), a.GetText(c)!.ToString())
+            );
 
         context.RegisterPostInitializationOutput(i =>
         {
-            i.AddSource("OpenApiClientAttribute.g.cs", OpenApiClientGenerationHelper.Attribute);
+            i.AddSource($"{MarkerAttributeName}.g.cs", OpenApiClientGenerationHelper.Attribute);
         });
 
-        IncrementalValuesProvider<OpenApiContract?> classesToGenerate = context
+        IncrementalValuesProvider<RequestedClassToGenerate?> classesToGenerate = context
             .SyntaxProvider.ForAttributeWithMetadataName(
-                "OpenApi.Client.OpenApiClientAttribute",
+                searchedAttribute,
                 predicate: static (s, _) => true,
                 transform: static (syntaxContext, cancellationToken) =>
-                    ComputeOpenApiContract(
+                    ComputeClassForGeneration(
                         syntaxContext.SemanticModel,
                         syntaxContext.TargetNode,
                         cancellationToken
@@ -47,14 +54,14 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
             .Where(static m => m is not null);
 
         IncrementalValuesProvider<(
-            OpenApiContract? Left,
+            RequestedClassToGenerate? Left,
             ImmutableArray<(string, string)> Right
         )> compilationAndFiles = classesToGenerate.Combine(additionalFiles.Collect());
 
-        context.RegisterSourceOutput(compilationAndFiles, Generate);
+        context.RegisterSourceOutput(compilationAndFiles, Execute);
     }
 
-    internal static OpenApiContract? ComputeOpenApiContract(
+    internal static RequestedClassToGenerate? ComputeClassForGeneration(
         SemanticModel semanticModel,
         SyntaxNode node,
         CancellationToken cancellationToken
@@ -71,7 +78,7 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
 
         foreach (AttributeData attribute in attributes)
         {
-            if (attribute.AttributeClass?.Name == "OpenApiClientAttribute")
+            if (attribute.AttributeClass?.Name == MarkerAttributeName)
             {
                 if (attribute.ConstructorArguments.Length > 0)
                 {
@@ -93,12 +100,13 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
             }
         }
 
-        return new OpenApiContract
+        return new RequestedClassToGenerate
         {
-            Namespace = namedSymbol.ContainingNamespace.ToString(),
+            NamespaceName = namedSymbol.ContainingNamespace.ToString(),
             ClassName = namedSymbol.Name,
-            OpenApiSpecification = specification.ToLower(),
-            SerializationTool = serializationTool
+            SelectedFile = specification.ToLower(),
+            SerializationTool = serializationTool,
+            Access = namedSymbol.DeclaredAccessibility
         };
     }
 }

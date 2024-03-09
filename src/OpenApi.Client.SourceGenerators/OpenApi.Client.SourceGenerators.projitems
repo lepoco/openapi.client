@@ -10,19 +10,26 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="$(MSBuildThisFileDirectory)Contracts\OpenApiContract.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Converts\CamelCaseConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)converts\PascalCaseConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)contracts\OpenApiMethod.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)contracts\OpenApiMethodProperty.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)contracts\OpenApiMethodVerb.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\CamelCaseConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Converters\PascalCaseConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)extensions\DiagnosticsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ISymbolExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ITypeSymbolExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\EquatableArray{T}.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\HashCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImmutableArrayBuilder{T}.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Models\DiagnosticInfo.cs" />
+    <Compile Include="..\OpenApi.Client.SourceGenerators\Models\RequestedClassToGenerate.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OpenApiClientGenerationHelper.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OpenApiClientGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)OpenApiClientGenerator.Execute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Polyfills\GeneratorAttributeSyntaxContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Polyfills\SyntaxValueProviderExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schema\ApiDocument.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)serialization\ApiDocumentToStringConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\SerializationTool.cs" />
   </ItemGroup>
   <ItemGroup>

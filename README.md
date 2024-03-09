@@ -38,7 +38,7 @@ Define your partial class as open api client
 /// <summary>
 /// My YouTube Client.
 /// </summary>
-[OpenApiClient("google.youtube.api", false)]
+[OpenApiClient("google.youtube.api")]
 public partial class YouTubeClient;
 ```
 
@@ -47,8 +47,13 @@ You can now use your generated client!
 ```csharp
 IYouTubeClient client = new YouTubeClient(new HttpClient());
 
-var subscribersCount = client.GetSubscribersCountAsync("mychannel", CancellationToken.None);
+var subscribersCount = client.SubscribersCountAsync("mychannel", CancellationToken.None);
 ```
+
+## OpenAPI
+
+OpenAPI specification is available at:  
+https://github.com/OAI/OpenAPI-Specification
 
 ## Compilation
 

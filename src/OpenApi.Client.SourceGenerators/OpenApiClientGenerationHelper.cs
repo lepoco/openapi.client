@@ -17,7 +17,7 @@ internal static class OpenApiClientGenerationHelper
             /// <summary>
             /// Library which API should use at runtime.
             /// </summary>
-            public enum OpenApiClientSerialization
+            internal enum OpenApiClientSerialization
             {
                 SystemTextJson,
                 NewtonsoftJson

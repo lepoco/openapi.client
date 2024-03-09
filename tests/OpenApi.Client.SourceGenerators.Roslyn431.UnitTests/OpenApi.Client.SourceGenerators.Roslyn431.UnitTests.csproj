@@ -18,8 +18,9 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
   </ItemGroup>
-  
+
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OpenApi.Client\OpenApi.Client.csproj" />
+    <ProjectReference Include="..\..\src\OpenApi.Client.SourceGenerators.Roslyn431\OpenApi.Client.SourceGenerators.Roslyn431.csproj" />
   </ItemGroup>
+
 </Project>

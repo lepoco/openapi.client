@@ -3,11 +3,11 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-namespace OpenApi.Client.UnitTests;
+namespace OpenApi.Client.SourceGenerators.Contracts;
 
-//internal class ApiGeneratorTests
-//{
-//}
+internal readonly struct OpenApiMethodProperty
+{
+    public readonly required string PropertyType { get; init; }
 
-//[OpenApiClient]
-//public partial class SampleApiClient;
+    public readonly required string PropertyName { get; init; }
+}

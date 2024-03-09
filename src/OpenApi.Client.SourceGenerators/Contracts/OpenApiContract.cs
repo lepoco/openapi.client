@@ -3,19 +3,25 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using OpenApi.Client.SourceGenerators.Serialization;
-
 namespace OpenApi.Client.SourceGenerators.Contracts;
 
 internal sealed class OpenApiContract
 {
+    public required string Summary { get; init; }
+
+    public required string Version { get; init; }
+
+    public required string License { get; init; }
+
+    public required string Access { get; init; }
+
     public required string Namespace { get; init; }
 
     public required string ClassName { get; init; }
 
-    public required string OpenApiSpecification { get; init; }
+    public required string InterfaceName { get; init; }
 
-    public required SerializationTool SerializationTool { get; init; }
+    public required string ResultClassName { get; init; }
 
-    public string? ContractData { get; set; }
+    public required OpenApiMethod[] Methods { get; init; }
 }
