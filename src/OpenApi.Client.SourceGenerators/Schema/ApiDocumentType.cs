@@ -3,13 +3,13 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-namespace OpenApi.Client.SourceGenerators.Contracts;
+namespace OpenApi.Client.SourceGenerators.Schema;
 
-internal readonly struct OpenApiObject
+public sealed class ApiDocumentType
 {
-    public readonly required string Name { get; init; }
+    public required string Name { get; init; }
 
-    public readonly required string Description { get; init; }
+    public string? Summary { get; init; }
 
-    public readonly required OpenApiProperty[] Properties { get; init; }
+    public required IDictionary<string, string> Properties { get; init; }
 }

@@ -3,4 +3,13 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-global using Xunit;
+namespace OpenApi.Client.SourceGenerators.Contracts;
+
+public readonly struct OpenApiType
+{
+    public readonly required string Name { get; init; }
+
+    public readonly string? Summary { get; init; }
+
+    public required IDictionary<string, string> Properties { get; init; }
+}

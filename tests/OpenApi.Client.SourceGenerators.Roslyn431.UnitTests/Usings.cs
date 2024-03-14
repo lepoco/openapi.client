@@ -3,16 +3,8 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-namespace OpenApi.Client.SourceGenerators.Contracts;
-
-internal enum OpenApiMethodVerb
-{
-    Get,
-    Put,
-    Post,
-    Delete,
-    Options,
-    Head,
-    Patch,
-    Trace
-}
+global using System.Collections.Generic;
+global using System.IO;
+global using FluentAssertions;
+global using NSubstitute;
+global using Xunit;

@@ -54,6 +54,8 @@ var subscribersCount = client.SubscribersCountAsync("mychannel", CancellationTok
 
 Since we are using the generated internal `OpenApiAttribute` as a marker, conflicts may occur when we use `InternalsVisibleTo`.
 
+We found the use of nullable essential, so C# 8.0 is required.
+
 ## OpenAPI
 
 OpenAPI specification is available at:  

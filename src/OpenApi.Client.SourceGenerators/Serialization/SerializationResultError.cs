@@ -3,11 +3,6 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-namespace OpenApi.Client.SourceGenerators.Contracts;
+namespace OpenApi.Client.SourceGenerators.Serialization;
 
-internal readonly struct OpenApiProperty
-{
-    public readonly required string PropertyType { get; init; }
-
-    public readonly required string PropertyName { get; init; }
-}
+public readonly record struct SerializationResultError(string Id, string Category, string Message);

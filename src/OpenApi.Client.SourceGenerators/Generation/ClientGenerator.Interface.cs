@@ -3,49 +3,75 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using System.Text;
+using OpenApi.Client.SourceGenerators.Contracts;
 
 namespace OpenApi.Client.SourceGenerators.Genertion;
 
 internal sealed partial class ClientGenerator
 {
-    private const string InterfaceHeader = """
-            /// <summary>An interface for the <c>{{ContractTitle}}</c> Open API Client.</summary>
+    public const string InterfaceHeader = """
+            /// <summary>An interface for the <c>%T</c> Open API Client.</summary>
             /// <remarks>Generated with Open API Client Source Generator. See: <see href="https://github.com/lepoco/openapi.client"/></remarks>
-            {{ContractAccess}} interface I{{ContractClassName}}
+            %A interface I%C
             {
                 /// <summary>Gets the last status code from the HTTP request.</summary>
                 global::System.Net.HttpStatusCode? GetLastStatusCode();
+
         """;
 
-    private const string InterfaceFooter = """
+    public const string InterfaceFooter = """
             }
         """;
 
-    private void AppendInterface(StringBuilder builder)
+    public static void AppendInterface(StringBuilder builder, OpenApiContract contract)
     {
         builder.AppendLine(InterfaceHeader);
 
-        //        foreach (KeyValuePair<string, PathItem> path in apiDocument.Paths)
-        //        {
-        //            if (count > 0)
-        //            {
-        //                builder.AppendLine();
-        //            }
+        int methodsCount = 0;
 
-        //            builder.Append("        /// <summary>");
-        //            builder.Append(path.Value.Get.Summary); // TODO: Format, remove unsafe
-        //            builder.Append("</summary>");
-        //            builder.AppendLine();
-        //            builder.Append("        global::System.Threading.Tasks.Task<");
-        //            builder.Append(resultClassName);
-        //            builder.Append("> ");
-        //            builder.Append(PascalCaseConverter.Convert(path.Value.Get.OperationId));
-        //            builder.Append("Async");
-        //            builder.AppendLine("(global::System.Threading.CancellationToken cancellationToken);");
+        foreach (OpenApiPath path in contract.Paths)
+        {
+            if (methodsCount > 0)
+            {
+                builder.AppendLine();
+            }
 
-        //            count++;
-        //        }
+            if (path.Summary?.Length > 0)
+            {
+                builder.Append("        /// <summary>");
+                builder.Append(path.Summary);
+                builder.AppendLine("</summary>");
+            }
+
+            builder.Append("        global::System.Threading.Tasks.Task<%CResult");
+
+            if (path.ResponseType?.Length > 0)
+            {
+                builder.Append("<");
+                builder.Append(path.ResponseType);
+                builder.Append(">");
+            }
+
+            builder.Append("> ");
+            builder.Append(path.Name);
+            builder.Append("(");
+
+            if (path.RequestBodyType?.Length > 0)
+            {
+                builder.Append(path.RequestBodyType);
+                builder.Append(" request, ");
+            }
+
+            if (path.RequestQueryType?.Length > 0)
+            {
+                builder.Append(path.RequestQueryType);
+                builder.Append(" query, ");
+            }
+
+            builder.AppendLine("global::System.Threading.CancellationToken cancellationToken);");
+
+            methodsCount++;
+        }
 
         builder.AppendLine(InterfaceFooter);
     }

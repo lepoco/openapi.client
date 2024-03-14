@@ -5,9 +5,13 @@
 
 namespace OpenApi.Client.SourceGenerators.Schema;
 
-internal enum ApiDocumentVersion
+public enum ApiDocumentVersion
 {
     v1_2_0,
     v2_0_0,
+    v3_0_0,
+    v3_0_1,
+    v3_0_2,
+    v3_0_3,
     v3_1_0
 }

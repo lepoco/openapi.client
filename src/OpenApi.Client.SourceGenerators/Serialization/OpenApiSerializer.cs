@@ -3,110 +3,93 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using System;
-using System.Text.Json;
-using Microsoft.CodeAnalysis;
 using OpenApi.Client.SourceGenerators.Schema;
 
 namespace OpenApi.Client.SourceGenerators.Serialization;
 
-internal sealed class OpenApiSerializer(SourceProductionContext sourceProductionContext)
+public sealed class OpenApiSerializer()
 {
     private static readonly JsonSerializerOptions jsonSettings = new JsonSerializerOptions
     {
-        PropertyNameCaseInsensitive = true
+        PropertyNameCaseInsensitive = true,
+        Converters =
+        {
+            new JsonStringEnumConverter(),
+            new Converters.v2_0_0.ParameterJsonConverter(),
+            new Converters.v2_0_0.ResponseJsonConverter(),
+            new Converters.v3_0_3.ParameterJsonConverter(),
+            new Converters.v3_0_3.RequestBodyJsonConverter(),
+            new Converters.v3_0_3.ResponseJsonConverter(),
+            new Converters.v3_0_3.SchemaTypeJsonConverter(),
+            new Converters.v3_1_0.ParameterJsonConverter(),
+            new Converters.v3_1_0.RequestBodyJsonConverter(),
+            new Converters.v3_1_0.ResponseJsonConverter()
+        }
     };
 
-    public IApiDocument? Serialize(string? documentName, string? input)
+    public SerializationResult<IApiDocument> Deserialize(string? documentName, string? input)
     {
         documentName ??= "UNKNOWN_FILE_NAME";
 
         if (string.IsNullOrEmpty(input))
         {
-            sourceProductionContext.ReportDiagnostic(
-                Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        id: "OAPIC001",
-                        title: "Error",
-                        messageFormat: $"Document {documentName} is empty.",
-                        category: "OpenApi.Client.SourceGenerators.DocumentEmpty",
-                        defaultSeverity: DiagnosticSeverity.Error,
-                        isEnabledByDefault: true
-                    ),
-                    Location.None
-                )
+            return new SerializationResultError(
+                "OAPIC001",
+                "OpenApi.Client.SourceGenerators.DocumentEmpty",
+                $"Document {documentName} is empty."
             );
-
-            return null;
         }
 
-        ApiDocumentVersion? version = GetProvidedDocumentVersion(documentName, input!);
-
-        if (version is null)
-        {
-            sourceProductionContext.ReportDiagnostic(
-                Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        id: "OAPIC002",
-                        title: "Error",
-                        messageFormat: $"Unable to determine the Open API version of the document: {documentName}",
-                        category: "OpenApi.Client.SourceGenerators.VersionUnknown",
-                        defaultSeverity: DiagnosticSeverity.Error,
-                        isEnabledByDefault: true
-                    ),
-                    Location.None
-                )
-            );
-
-            return null;
-        }
-
-        return SerializeApiDocument(input!, version.Value);
-    }
-
-    private ApiDocumentVersion? GetProvidedDocumentVersion(string documentName, string input)
-    {
-        OpenApiMarkerObject? markerObject = null;
+        ApiDocumentVersion? version = null;
 
         try
         {
-            markerObject = JsonSerializer.Deserialize<OpenApiMarkerObject>(input, jsonSettings);
+            version = GetProvidedDocumentVersion(input!);
         }
         catch (Exception e)
         {
-            sourceProductionContext.ReportDiagnostic(
-                Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        id: "OAPIC002",
-                        title: "Error",
-                        messageFormat: $"Unable to determine the Open API version of the document: {documentName}, with exception: {e.Message}",
-                        category: "OpenApi.Client.SourceGenerators.VersionUnknown",
-                        defaultSeverity: DiagnosticSeverity.Error,
-                        isEnabledByDefault: true
-                    ),
-                    Location.None
-                )
+            return new SerializationResultError(
+                "OAPIC001",
+                "OpenApi.Client.SourceGenerators.VersionUnknown",
+                $"Extracting version from {documentName} failed with error: {e.Message}"
             );
-
-            return null;
         }
+
+        if (version is null)
+        {
+            return new SerializationResultError(
+                "OAPIC002",
+                "OpenApi.Client.SourceGenerators.VersionUnknown",
+                $"Unable to determine the Open API version of the document: {documentName}"
+            );
+        }
+
+        IApiDocument? serializationResult;
+
+        try
+        {
+            serializationResult = SerializeApiDocument(input!, version.Value);
+        }
+        catch (Exception e)
+        {
+            return new SerializationResultError(
+                "OAPIC001",
+                "OpenApi.Client.SourceGenerators.DocumentSerializationFailed",
+                $"Serialization of document \"{documentName}\" failed with error: {e.Message}"
+            );
+        }
+
+        return new SerializationResult<IApiDocument>(serializationResult);
+    }
+
+    private ApiDocumentVersion? GetProvidedDocumentVersion(string input)
+    {
+        OpenApiMarkerObject? markerObject = null;
+
+        markerObject = JsonSerializer.Deserialize<OpenApiMarkerObject>(input, jsonSettings);
 
         if (markerObject is null)
         {
-            sourceProductionContext.ReportDiagnostic(
-                Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        id: "OAPIC002",
-                        title: "Error",
-                        messageFormat: $"Unable to determine the Open API version of the document: {documentName}",
-                        category: "OpenApi.Client.SourceGenerators.VersionUnknown",
-                        defaultSeverity: DiagnosticSeverity.Error,
-                        isEnabledByDefault: true
-                    ),
-                    Location.None
-                )
-            );
-
             return null;
         }
 
@@ -118,11 +101,18 @@ internal sealed class OpenApiSerializer(SourceProductionContext sourceProduction
 
         return version switch
         {
+            "1" => ApiDocumentVersion.v1_2_0,
             "1.2.0" => ApiDocumentVersion.v1_2_0,
             "1.2" => ApiDocumentVersion.v1_2_0,
             "2.0.0" => ApiDocumentVersion.v2_0_0,
             "2.0" => ApiDocumentVersion.v2_0_0,
             "2" => ApiDocumentVersion.v2_0_0,
+            "3" => ApiDocumentVersion.v3_0_0,
+            "3.0" => ApiDocumentVersion.v3_0_0,
+            "3.0.0" => ApiDocumentVersion.v3_0_0,
+            "3.0.1" => ApiDocumentVersion.v3_0_1,
+            "3.0.2" => ApiDocumentVersion.v3_0_2,
+            "3.0.3" => ApiDocumentVersion.v3_0_3,
             "3.1.0" => ApiDocumentVersion.v3_1_0,
             "3.1" => ApiDocumentVersion.v3_1_0,
             _ => null
@@ -131,49 +121,25 @@ internal sealed class OpenApiSerializer(SourceProductionContext sourceProduction
 
     private IApiDocument? SerializeApiDocument(string input, ApiDocumentVersion version)
     {
-        try
+        switch (version)
         {
-            switch (version)
-            {
-                case ApiDocumentVersion.v1_2_0:
-                    return JsonSerializer.Deserialize<Schema.v1_2_0.ApiDocument>(
-                        input,
-                        jsonSettings
-                    );
+            case ApiDocumentVersion.v1_2_0:
+                return JsonSerializer.Deserialize<Schema.v1_2_0.ApiDocument>(input, jsonSettings);
 
-                case ApiDocumentVersion.v2_0_0:
-                    return JsonSerializer.Deserialize<Schema.v2_0_0.ApiDocument>(
-                        input,
-                        jsonSettings
-                    );
+            case ApiDocumentVersion.v2_0_0:
+                return JsonSerializer.Deserialize<Schema.v2_0_0.ApiDocument>(input, jsonSettings);
 
-                case ApiDocumentVersion.v3_1_0:
-                    return JsonSerializer.Deserialize<Schema.v3_1_0.ApiDocument>(
-                        input,
-                        jsonSettings
-                    );
+            case ApiDocumentVersion.v3_0_0:
+            case ApiDocumentVersion.v3_0_1:
+            case ApiDocumentVersion.v3_0_2:
+            case ApiDocumentVersion.v3_0_3:
+                return JsonSerializer.Deserialize<Schema.v3_0_3.ApiDocument>(input, jsonSettings);
 
-                default:
-                    return null;
-            }
-        }
-        catch (Exception e)
-        {
-            sourceProductionContext.ReportDiagnostic(
-                Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        id: "OAPIC001",
-                        title: "Error",
-                        messageFormat: $"Open API document deserialization failed with message: {e.Message}",
-                        category: "OpenApi.Client.SourceGenerators.DocumentSerializationFailed",
-                        defaultSeverity: DiagnosticSeverity.Error,
-                        isEnabledByDefault: true
-                    ),
-                    Location.None
-                )
-            );
+            case ApiDocumentVersion.v3_1_0:
+                return JsonSerializer.Deserialize<Schema.v3_1_0.ApiDocument>(input, jsonSettings);
 
-            return null;
+            default:
+                return null;
         }
     }
 

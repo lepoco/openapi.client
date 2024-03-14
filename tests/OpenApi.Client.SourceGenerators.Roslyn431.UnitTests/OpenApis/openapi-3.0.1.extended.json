@@ -1,0 +1,251 @@
+{
+  "openapi": "3.0.1",
+  "info": {
+    "title": "Profile API",
+    "description": "Profile API for common user",
+    "version": "1.0"
+  },
+  "paths": {
+    "/gw/profile-svc/api/v1/profile/roles": {
+      "get": {
+        "tags": [
+          "Role"
+        ],
+        "summary": "Get user roles.",
+        "description": "Returns a list of user roles.",
+        "operationId": "GetUserRoles",
+        "responses": {
+          "200": {
+            "description": "Collection of roles based on selected parameters.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetUserRolesRoleResponse"
+                  },
+                  "description": "The response data for user roles."
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetUserRolesRoleResponse"
+                  },
+                  "description": "The response data for user roles."
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/GetUserRolesRoleResponse"
+                  },
+                  "description": "The response data for user roles."
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Server will not process the request due to something that is perceived to be a client error."
+          },
+          "401": {
+            "description": "No valid authentication credentials for the requested resource."
+          },
+          "403": {
+            "description": "Insufficient rights to a resource."
+          }
+        }
+      }
+    },
+    "/gw/profile-svc/api/v1/users": {
+      "get": {
+        "tags": [
+          "Users"
+        ],
+        "summary": "Get users.",
+        "description": "Returns a list of users based on the selected pagination and parameters.",
+        "operationId": "GetUsers",
+        "parameters": [
+          {
+            "name": "Page",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maximum": 1000,
+              "minimum": 1,
+              "type": "integer",
+              "description": "The page index.",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "Limit",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "maximum": 1000,
+              "minimum": 1,
+              "type": "integer",
+              "description": "The page limit index.",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "FirstName",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "description": "The first name that the user should have.",
+              "nullable": true
+            }
+          },
+          {
+            "name": "LastName",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "description": "The last name that the user should have.",
+              "nullable": true
+            }
+          },
+          {
+            "name": "Email",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "description": "The e-mail that the user should have.",
+              "nullable": true
+            }
+          },
+          {
+            "name": "UserId",
+            "in": "query",
+            "schema": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              },
+              "description": "The id that the user should have.",
+              "nullable": true
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Collection of users based on selected parameters.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUsersResponse"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUsersResponse"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetUsersResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Server will not process the request due to something that is perceived to be a client error."
+          },
+          "401": {
+            "description": "No valid authentication credentials for the requested resource."
+          },
+          "403": {
+            "description": "Insufficient rights to a resource."
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "GetUserRolesRoleResponse": {
+        "type": "object",
+        "properties": {
+          "roleId": {
+            "type": "string",
+            "nullable": true
+          },
+          "name": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represent a single user role."
+      },
+      "GetUsersResponse": {
+        "type": "object",
+        "properties": {
+          "currentPage": {
+            "type": "integer",
+            "description": "Currently requested resource page with number of elements specified in ItemsPerPage.",
+            "format": "int32",
+            "readOnly": true
+          },
+          "totalPages": {
+            "type": "integer",
+            "description": "Total number of all pages possible to retrieve when dividing the total number of all resources by ItemsPerPage.",
+            "format": "int32",
+            "readOnly": true
+          },
+          "itemsPerPage": {
+            "type": "integer",
+            "description": "How many resources should be in each page.",
+            "format": "int32",
+            "readOnly": true
+          },
+          "totalItems": {
+            "type": "integer",
+            "description": "Total amount of available resources.",
+            "format": "int64",
+            "readOnly": true
+          },
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/GetUsersUserResponse"
+            },
+            "description": "Resources for the CurrentPage.",
+            "nullable": true,
+            "readOnly": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "The response data for users."
+      },
+      "GetUsersUserResponse": {
+        "type": "object",
+        "properties": {
+          "userId": {
+            "type": "string",
+            "nullable": true
+          },
+          "firstName": {
+            "type": "string",
+            "nullable": true
+          },
+          "lastName": {
+            "type": "string",
+            "nullable": true
+          },
+          "email": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represent a single user."
+      }
+    }
+  }
+}

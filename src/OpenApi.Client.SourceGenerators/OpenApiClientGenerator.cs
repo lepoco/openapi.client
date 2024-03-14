@@ -3,10 +3,6 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using System.Collections.Immutable;
-using System.IO;
-using System.Linq;
-using System.Threading;
 using Microsoft.CodeAnalysis;
 
 namespace OpenApi.Client.SourceGenerators;
@@ -24,49 +20,45 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
     {
         const string searchedAttribute = $"OpenApi.Client.{MarkerAttributeName}";
 
-        // TODO: Fix files
-        IncrementalValuesProvider<(string, string)> additionalFiles = context
-            .AdditionalTextsProvider.Where(a =>
-                a.Path.EndsWith("json") || a.Path.EndsWith("yml") || a.Path.EndsWith("yaml")
-            )
-            .Select(
-                (a, c) =>
-                    (Path.GetFileNameWithoutExtension(a.Path).ToLower(), a.GetText(c)!.ToString())
-            );
-
         context.RegisterPostInitializationOutput(i =>
         {
             i.AddSource($"{MarkerAttributeName}.g.cs", OpenApiClientGenerationHelper.Attribute);
         });
 
-        IncrementalValuesProvider<RequestedClassToGenerate?> classesToGenerate = context
+        var additionalFiles = context
+            .AdditionalTextsProvider.Where(text =>
+                text.Path.EndsWith(".json", StringComparison.OrdinalIgnoreCase)
+            )
+            .Select(
+                (additionalText, cancellationToken) =>
+                    (
+                        Path.GetFileNameWithoutExtension(additionalText.Path).ToLower(),
+                        additionalText.GetText(cancellationToken)!.ToString()
+                    )
+            )
+            .Where(text => text.Item1 is not null && text.Item2 is not null)!
+            .Collect();
+
+        var classInfos = context
             .SyntaxProvider.ForAttributeWithMetadataName(
                 searchedAttribute,
                 predicate: static (s, _) => true,
-                transform: static (syntaxContext, cancellationToken) =>
-                    ComputeClassForGeneration(
-                        syntaxContext.SemanticModel,
-                        syntaxContext.TargetNode,
-                        cancellationToken
-                    )
+                transform: ComputeClassForGeneration
             )
             .Where(static m => m is not null);
 
-        IncrementalValuesProvider<(
-            RequestedClassToGenerate? Left,
-            ImmutableArray<(string, string)> Right
-        )> compilationAndFiles = classesToGenerate.Combine(additionalFiles.Collect());
-
-        context.RegisterSourceOutput(compilationAndFiles, Execute);
+        context.RegisterSourceOutput(classInfos.Combine(additionalFiles), Execute);
     }
 
     private static RequestedClassToGenerate? ComputeClassForGeneration(
-        SemanticModel semanticModel,
-        SyntaxNode node,
+        GeneratorAttributeSyntaxContext syntaxContext,
         CancellationToken cancellationToken
     )
     {
-        if (semanticModel.GetDeclaredSymbol(node) is not INamedTypeSymbol namedSymbol)
+        if (
+            syntaxContext.SemanticModel.GetDeclaredSymbol(syntaxContext.TargetNode)
+            is not INamedTypeSymbol namedSymbol
+        )
         {
             return null;
         }

@@ -7,12 +7,12 @@ namespace OpenApi.Client.SourceGenerators.Genertion;
 
 internal sealed partial class ClientGenerator
 {
-    private const string ResultTemplate = """
+    public const string ResultTemplate = """
             /// <summary>Represents a result of the API call.</summary>
-            {{ContractAccess}} struct {{ContractClassName}}ResultError
+            %A struct %CResultError
             {
                 /// <summary>Initializes a new instance of the error struct.</summary>
-                public {{ContractClassName}}ResultError(string message)
+                public %CResultError(string message)
                 {
                     Message = message;
                 }
@@ -22,26 +22,20 @@ internal sealed partial class ClientGenerator
             }
 
             /// <summary>Represents a result of the API call.</summary>
-            {{ContractAccess}} class {{ContractClassName}}Result
+            %A class %CResult
             {
                 /// <summary>Initializes a new instance of the class.</summary>
                 /// <param name="errors">The errors of the API call.</param>
                 /// <param name="statusCode">The status code of the API call.</param>
-                public {{ContractClassName}}Result({{ContractClassName}}ResultError[] errors, global::System.Net.HttpStatusCode? statusCode)
+                public %CResult(%CResultError[] errors, global::System.Net.HttpStatusCode? statusCode)
                 {
                     Errors = errors;
                     StatusCode = statusCode;
                 }
 
                 /// <summary>Initializes a new instance of the result class.</summary>
-                /// <param name="statusCode">The errors of the API call.</param>
-                public {{ContractClassName}}Result(global::System.Net.HttpStatusCode? statusCode) : this(new {{ContractClassName}}ResultError[0], statusCode)
-                {
-                }
-
-                /// <summary>Initializes a new instance of the result class.</summary>
-                /// <param name="errors">The errors of the API call.</param>
-                public {{ContractClassName}}Result({{ContractClassName}}ResultError[] errors) : this(errors, null)
+                /// <param name="statusCode">The status code of the API call.</param>
+                public %CResult(global::System.Net.HttpStatusCode? statusCode) : this(new %CResultError[0], statusCode)
                 {
                 }
 
@@ -49,37 +43,51 @@ internal sealed partial class ClientGenerator
                 public global::System.Net.HttpStatusCode? StatusCode { get; }
 
                 /// <summary>Gets the errors of the API call.</summary>
-                public {{ContractClassName}}ResultError[] Errors { get; }
+                public %CResultError[] Errors { get; }
 
                 /// <summary>Gets a value indicating whether the API call has errors.</summary>
-                public bool HasErrors => Errors.Length > 0;
-
-                /// <summary>Gets a value indicating whether the API call is successful.</summary>
-                public bool IsSucceed => !HasErrors;
+                public bool HasErrors
+                {
+                    get
+                    {
+                        return Errors.Length > 0;
+                    }
+                }
             }
 
             /// <summary>Represents a result from the API.</summary>
-            {{ContractAccess}} sealed class {{ContractClassName}}Result<TResult> : {{ContractClassName}}Result
+            %A sealed class %CResult<TResult> : %CResult where TResult : class
             {
                 private readonly TResult? _result;
 
                 /// <summary>Initializes a new instance of the result class.</summary>
                 /// <param name="result">Result of the API call.</param>
                 /// <param name="statusCode">The status code of the API call.</param>
-                public {{ContractClassName}}Result(TResult result, global::System.Net.HttpStatusCode? statusCode) : base(statusCode)
+                public %CResult(TResult result, global::System.Net.HttpStatusCode? statusCode) : base(statusCode)
                 {
+                    if (result == null)
+                    {
+                        throw new global::System.ArgumentNullException(nameof(result));
+                    }
+
                     _result = result;
                 }
 
                 /// <summary>Initializes a new instance of the result class.</summary>
                 /// <param name="errors">The errors of the API call.</param>
                 /// <param name="statusCode">The errors of the API call.</param>
-                public {{ContractClassName}}Result({{ContractClassName}}ResultError[] errors, global::System.Net.HttpStatusCode? statusCode) : base(errors, statusCode)
+                public %CResult(%CResultError[] errors, global::System.Net.HttpStatusCode? statusCode) : base(errors, statusCode)
                 {
                 }
 
                 /// <summary>Gets the result of the API call.</summary>
-                public TResult Result => _result ?? throw new global::System.InvalidOperationException("Cannot retrieve API result if errors exist.");
+                public TResult Result
+                {
+                    get
+                    {
+                        return _result ?? throw new global::System.InvalidOperationException("Cannot retrieve API result if errors exist.");
+                    }
+                }
             }
         """;
 }

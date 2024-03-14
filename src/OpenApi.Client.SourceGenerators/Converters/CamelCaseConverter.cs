@@ -3,12 +3,11 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace OpenApi.Client.SourceGenerators.Converters;
 
-internal static class CamelCaseConverter
+public static class CamelCaseConverter
 {
     private static readonly Regex regex = new Regex(@"[^a-zA-Z0-9\s]", RegexOptions.Compiled);
 
@@ -19,10 +18,26 @@ internal static class CamelCaseConverter
             return string.Empty;
         }
 
+        value = value.Replace('_', ' ').Replace('-', ' ');
+
         value = Encoding.ASCII.GetString(Encoding.ASCII.GetBytes(value));
 
         value = regex.Replace(value, string.Empty);
 
-        return char.ToLowerInvariant(value[0]) + value.Substring(1);
+        string[] words = value.Split(' ');
+
+        for (int i = 0; i < words.Length; i++)
+        {
+            if (i == 0)
+            {
+                words[i] = char.ToLowerInvariant(words[i][0]) + words[i].Substring(1);
+            }
+            else
+            {
+                words[i] = char.ToUpperInvariant(words[i][0]) + words[i].Substring(1);
+            }
+        }
+
+        return string.Join("", words);
     }
 }

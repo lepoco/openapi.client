@@ -10,8 +10,6 @@
 // This file is ported and adapted from ComputeSharp (Sergio0694/ComputeSharp),
 // more info in ThirdPartyNotices.txt in the root of the project.
 
-using System.Collections.Immutable;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using OpenApi.Client.SourceGenerators.Helpers;

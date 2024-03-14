@@ -5,7 +5,7 @@
 
 namespace OpenApi.Client.SourceGenerators.Schema;
 
-internal interface IApiDocument
+public interface IApiDocument
 {
     ApiDocumentVersion? GetOpenApiVersion();
 
@@ -16,4 +16,8 @@ internal interface IApiDocument
     string? GetVersion();
 
     string? GetLicense();
+
+    IEnumerable<ApiDocumentPath> GetPaths();
+
+    IEnumerable<ApiDocumentType> GetTypes();
 }

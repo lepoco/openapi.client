@@ -3,12 +3,11 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using System.Text;
 using System.Text.RegularExpressions;
 
 namespace OpenApi.Client.SourceGenerators.Converters;
 
-internal static class PascalCaseConverter
+public static class PascalCaseConverter
 {
     private static readonly Regex regex = new Regex(@"[^a-zA-Z0-9\s]", RegexOptions.Compiled);
 
@@ -19,10 +18,17 @@ internal static class PascalCaseConverter
             return string.Empty;
         }
 
+        value = value.Replace('_', ' ').Replace('-', ' ');
+
         value = Encoding.ASCII.GetString(Encoding.ASCII.GetBytes(value));
 
         value = regex.Replace(value, string.Empty);
 
-        return char.ToUpperInvariant(value[0]) + value.Substring(1);
+        string[] words = value.Split(' ');
+        IEnumerable<string> capitalizedWords = words.Select(word =>
+            char.ToUpperInvariant(word[0]) + word.Substring(1)
+        );
+
+        return string.Join("", capitalizedWords);
     }
 }
