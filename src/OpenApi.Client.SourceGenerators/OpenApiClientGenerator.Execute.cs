@@ -48,7 +48,7 @@ public partial class OpenApiClientGenerator
             spc.ReportDiagnostic(
                 Diagnostic.Create(
                     DiagnosticDescriptors.DocumentMissing,
-                    Location.None,
+                    compilationAndFiles.Contract.Location ?? Location.None,
                     compilationAndFiles.Contract.SelectedFile
                 )
             );
@@ -61,7 +61,7 @@ public partial class OpenApiClientGenerator
             spc.ReportDiagnostic(
                 Diagnostic.Create(
                     DiagnosticDescriptors.DocumentEmpty,
-                    Location.None,
+                    compilationAndFiles.Contract.Location ?? Location.None,
                     compilationAndFiles.Contract.SelectedFile
                 )
             );
@@ -82,7 +82,7 @@ public partial class OpenApiClientGenerator
                 spc.ReportDiagnostic(
                     Diagnostic.Create(
                         DiagnosticDescriptors.DocumentDeserializationFailed,
-                        Location.None,
+                        compilationAndFiles.Contract.Location ?? Location.None,
                         compilationAndFiles.Contract.SelectedFile,
                         error.Message
                     )
@@ -97,7 +97,7 @@ public partial class OpenApiClientGenerator
             spc.ReportDiagnostic(
                 Diagnostic.Create(
                     DiagnosticDescriptors.GenerationFailed,
-                    Location.None,
+                    compilationAndFiles.Contract.Location ?? Location.None,
                     compilationAndFiles.Contract.SelectedFile,
                     "Serializer returned empty contract"
                 )
@@ -120,7 +120,7 @@ public partial class OpenApiClientGenerator
             spc.ReportDiagnostic(
                 Diagnostic.Create(
                     DiagnosticDescriptors.MissingPaths,
-                    Location.None,
+                    compilationAndFiles.Contract.Location ?? Location.None,
                     compilationAndFiles.Contract.SelectedFile
                 )
             );
@@ -140,7 +140,7 @@ public partial class OpenApiClientGenerator
                     spc.ReportDiagnostic(
                         Diagnostic.Create(
                             DiagnosticDescriptors.GenerationFailed,
-                            Location.None,
+                            compilationAndFiles.Contract.Location ?? Location.None,
                             compilationAndFiles.Contract.SelectedFile,
                             error.Message
                         )
@@ -157,7 +157,7 @@ public partial class OpenApiClientGenerator
             spc.ReportDiagnostic(
                 Diagnostic.Create(
                     DiagnosticDescriptors.GenerationFailed,
-                    Location.None,
+                    compilationAndFiles.Contract.Location ?? Location.None,
                     compilationAndFiles.Contract.SelectedFile,
                     e.Message
                 )
@@ -171,7 +171,7 @@ public partial class OpenApiClientGenerator
             spc.ReportDiagnostic(
                 Diagnostic.Create(
                     DiagnosticDescriptors.GeneratedSourceEmpty,
-                    Location.None,
+                    compilationAndFiles.Contract.Location ?? Location.None,
                     compilationAndFiles.Contract.SelectedFile
                 )
             );

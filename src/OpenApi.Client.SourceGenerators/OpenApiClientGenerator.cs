@@ -64,6 +64,7 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
         }
 
         string specification = string.Empty;
+        Location? location = null;
         RequestedSerializationTool serializationTool = RequestedSerializationTool.SystemTextJson;
         ImmutableArray<AttributeData> attributes = namedSymbol.GetAttributes();
 
@@ -71,6 +72,10 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
         {
             if (attribute.AttributeClass?.Name == MarkerAttributeName)
             {
+                location = attribute.ApplicationSyntaxReference?.SyntaxTree.GetLocation(
+                    attribute.ApplicationSyntaxReference.Span
+                );
+
                 if (attribute.ConstructorArguments.Length > 0)
                 {
                     TypedConstant specificationArgument = attribute.ConstructorArguments[0];
@@ -97,7 +102,8 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
             ClassName = namedSymbol.Name,
             SelectedFile = specification.ToLower(),
             SerializationTool = serializationTool,
-            Access = namedSymbol.DeclaredAccessibility
+            Access = namedSymbol.DeclaredAccessibility,
+            Location = location
         };
     }
 
@@ -118,5 +124,7 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
         public required Accessibility Access { get; init; }
 
         public required RequestedSerializationTool SerializationTool { get; init; }
+
+        public required Location? Location { get; init; }
     }
 }

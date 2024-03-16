@@ -1,5 +1,12 @@
 <Project>
 
+  <!-- Use decorators -->
+  <Target Name="OpenApiClientGatherContracts">
+    <ItemGroup>
+      <AdditionalFiles Include="@(OpenApiContract)" />
+    </ItemGroup>
+  </Target>
+
   <!-- Get the analyzer from the OpenApi.Client NuGet package -->
   <Target Name="OpenApiClientGatherAnalyzers">
     <ItemGroup>
