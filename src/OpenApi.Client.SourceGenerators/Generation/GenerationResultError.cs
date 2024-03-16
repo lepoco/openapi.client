@@ -3,6 +3,6 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-namespace OpenApi.Client.SourceGenerators.Serialization;
+namespace OpenApi.Client.SourceGenerators.Genertion;
 
-public readonly record struct SerializationResultError(string Message);
+public readonly record struct GenerationResultError(string Message);

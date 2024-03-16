@@ -32,6 +32,10 @@ internal sealed partial class ClientGenerator
                 {
                 }
 
+                protected %C() : this(default!, default!)
+                {
+                }
+
                 protected %C(global::System.Net.Http.HttpClient httpClient, global::System.Text.Json.JsonSerializerOptions jsonSettings)
                 {
                     HttpClient = httpClient;
@@ -190,14 +194,19 @@ internal sealed partial class ClientGenerator
 
                             try
                             {
-                                responseBody = await ExecuteRequestAsync(global::System.Net.Http.HttpMethod.Get, {{{(
+                                responseBody = await ExecuteRequestAsync(
+                                    global::System.Net.Http.HttpMethod.Get,
+                                    {{{(
                     "\""
                     + path.Path
                     + "\""
                     + (path.RequestQueryType?.Length > 0 ? " + ComputeQueryString(query)" : null)
-                )}}}, {{{(
+                )}}},
+                                    {{{(
                     path.RequestBodyType?.Length > 0 ? "SerializeRequest(request)" : "null"
-                )}}}, cancellationToken);
+                )}}},
+                                    cancellationToken
+                                );
                             }
                             catch (global::System.Exception e)
                             {

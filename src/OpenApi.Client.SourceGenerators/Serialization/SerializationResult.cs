@@ -29,9 +29,4 @@ public sealed class SerializationResult<TResult>
     {
         return new SerializationResult<TResult>(error);
     }
-
-    public static implicit operator SerializationResult<TResult>(TResult? result)
-    {
-        return new SerializationResult<TResult>(result);
-    }
 }

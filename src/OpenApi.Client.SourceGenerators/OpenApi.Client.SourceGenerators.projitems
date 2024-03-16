@@ -17,6 +17,7 @@
     <Compile Include="$(MSBuildThisFileDirectory)Converters\CamelCaseConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\PascalCaseConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Converters\PropertyConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Diagnostics\DiagnosticDescriptors.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DiagnosticsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ISymbolExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ITypeSymbolExtensions.cs" />
@@ -25,6 +26,8 @@
     <Compile Include="$(MSBuildThisFileDirectory)Generation\ClientGenerator.Interface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Generation\ClientGenerator.Result.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Generation\ClientGenerator.Types.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)generation\GenerationResult.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)generation\GenerationResultError.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\EquatableArray{T}.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\HashCode.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\ImmutableArrayBuilder{T}.cs" />
@@ -41,16 +44,10 @@
     <Compile Include="$(MSBuildThisFileDirectory)Schema\IApiDocument.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schema\v1_2_0\ApiDocument.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schema\v2_0_0\ApiDocument.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Schema\v3_0_3\ApiDocument.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Schema\v3_1_0\ApiDocument.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Attributes\NumberToStringConverterAttribute.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Converters\NumberToStringConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Converters\v2_0_0\ParameterJsonConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Converters\v2_0_0\ResponseJsonConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Converters\v3_0_3\ParameterJsonConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Converters\v3_0_3\RequestBodyJsonConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Converters\v3_0_3\ResponseJsonConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\converters\v3_0_3\SchemaTypeJsonConverter.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Converters\v3_1_0\SchemaTypeJsonConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Converters\v3_1_0\ParameterJsonConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Converters\v3_1_0\RequestBodyJsonConverter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Serialization\Converters\v3_1_0\ResponseJsonConverter.cs" />

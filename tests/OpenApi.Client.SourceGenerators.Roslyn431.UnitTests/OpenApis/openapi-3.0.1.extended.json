@@ -6,7 +6,50 @@
     "version": "1.0"
   },
   "paths": {
-    "/gw/profile-svc/api/v1/profile/roles": {
+    "/admin-service/users": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Create user.",
+        "description": "Create new user.",
+        "operationId": "CreateUser",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "202": {
+            "description": "The user creation request was accepted."
+          },
+          "400": {
+            "description": "Server will not process the request due to something that is perceived to be a client error."
+          },
+          "401": {
+            "description": "No valid authentication credentials for the requested resource."
+          },
+          "403": {
+            "description": "Insufficient rights to a resource."
+          }
+        }
+      }
+    },
+    "/profile-service/profile/roles": {
       "get": {
         "tags": [
           "Role"
@@ -59,7 +102,7 @@
         }
       }
     },
-    "/gw/profile-svc/api/v1/users": {
+    "/profile-service/users": {
       "get": {
         "tags": [
           "Users"
@@ -168,6 +211,43 @@
   },
   "components": {
     "schemas": {
+      "CreateUserRequest": {
+        "required": [
+          "email",
+          "firstName",
+          "lastName",
+          "roles"
+        ],
+        "type": "object",
+        "properties": {
+          "firstName": {
+            "maxLength": 300,
+            "minLength": 3,
+            "type": "string",
+            "description": "The user first name."
+          },
+          "lastName": {
+            "maxLength": 300,
+            "minLength": 3,
+            "type": "string",
+            "description": "The user last name."
+          },
+          "email": {
+            "maxLength": 600,
+            "minLength": 3,
+            "type": "string",
+            "description": "The user email."
+          },
+          "roles": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "User roles."
+          },
+        },
+        "additionalProperties": false
+      },
       "GetUserRolesRoleResponse": {
         "type": "object",
         "properties": {
@@ -245,6 +325,18 @@
         },
         "additionalProperties": false,
         "description": "Represent a single user."
+      },
+      "UserType": {
+        "enum": [
+          "Modern",
+          "Legacy"
+        ],
+        "type": "string",
+        "description": "\n\nModern\n\nLegacy",
+        "x-enumNames": [
+          "Modern",
+          "Legacy"
+        ]
       }
     }
   }

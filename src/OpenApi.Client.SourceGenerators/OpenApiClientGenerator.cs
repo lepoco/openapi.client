@@ -25,7 +25,7 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
             i.AddSource($"{MarkerAttributeName}.g.cs", OpenApiClientGenerationHelper.Attribute);
         });
 
-        var additionalFiles = context
+        IncrementalValueProvider<ImmutableArray<(string, string)>> additionalFiles = context
             .AdditionalTextsProvider.Where(text =>
                 text.Path.EndsWith(".json", StringComparison.OrdinalIgnoreCase)
             )
@@ -39,7 +39,7 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
             .Where(text => text.Item1 is not null && text.Item2 is not null)!
             .Collect();
 
-        var classInfos = context
+        IncrementalValuesProvider<RequestedClassToGenerate?> classInfos = context
             .SyntaxProvider.ForAttributeWithMetadataName(
                 searchedAttribute,
                 predicate: static (s, _) => true,

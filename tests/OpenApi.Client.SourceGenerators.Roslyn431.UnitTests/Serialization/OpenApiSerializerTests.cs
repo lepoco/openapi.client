@@ -43,7 +43,7 @@ public sealed class OpenApiSerializerTests
 
         ApiDocumentPath[] paths = serializationResult.Result!.GetPaths().ToArray();
 
-        paths.Should().HaveCount(2);
+        paths.Should().HaveCount(3);
     }
 
     [Fact]
@@ -59,6 +59,6 @@ public sealed class OpenApiSerializerTests
 
         ApiDocumentType[] types = serializationResult.Result!.GetTypes().ToArray();
 
-        types.Should().HaveCount(3);
+        types.Should().HaveCount(5);
     }
 }

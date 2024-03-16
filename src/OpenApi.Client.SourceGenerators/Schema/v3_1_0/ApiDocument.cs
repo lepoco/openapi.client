@@ -5,7 +5,7 @@
 
 namespace OpenApi.Client.SourceGenerators.Schema.v3_1_0;
 
-// NOTE: https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.1.0.md
+// NOTE: https://github.com/OAI/OpenAPI-Specification/blob/main/versions/3.0.3.md
 
 /// <summary>
 /// This is the root object of the OpenAPI document.
@@ -16,9 +16,9 @@ public sealed class ApiDocument : IApiDocument
 
     public Info? Info { get; set; }
 
-    public string? JsonSchemaDialect { get; set; }
-
     public Dictionary<string, PathItem>? Paths { get; set; }
+
+    public Components? Components { get; set; }
 
     public ApiDocumentVersion? GetOpenApiVersion()
     {
@@ -82,6 +82,24 @@ public sealed class ApiDocument : IApiDocument
     public IEnumerable<ApiDocumentType> GetTypes()
     {
         yield break;
+        //foreach (KeyValuePair<string, ISchemaType> schema in Components.Schemas)
+        //{
+        //    if (schema.Value is SchemaType typedSchema)
+        //    {
+        //        Dictionary<string, string> properties = new Dictionary<string, string>();
+
+        //        string typeName = schema.Key;
+        //        string summary = typedSchema.Description;
+
+        //        // 5. Yield ApiDocumentType
+        //        yield return new ApiDocumentType
+        //        {
+        //            Name = typeName,
+        //            Summary = summary,
+        //            Properties = properties
+        //        };
+        //    }
+        //}
     }
 
     private ApiDocumentPath ComputePath(ApiDocumentMethod method, string path, Operation operation)
@@ -103,8 +121,6 @@ public sealed class ApiDocument : IApiDocument
 public sealed class Info
 {
     public string? Title { get; set; }
-
-    public string? Summary { get; set; }
 
     public string? Description { get; set; }
 
@@ -130,17 +146,11 @@ public sealed class License
 {
     public string? Name { get; set; }
 
-    public string? Identifier { get; set; }
-
     public string? Url { get; set; }
 }
 
 public sealed class PathItem
 {
-    public string? Summary { get; set; }
-
-    public string? Description { get; set; }
-
     public Operation? Get { get; set; }
 
     public Operation? Put { get; set; }
@@ -199,6 +209,12 @@ public sealed class Parameter : IParameter
     public bool Deprecated { get; set; }
 
     public bool AllowEmptyValue { get; set; }
+
+    public string? Style { get; set; }
+
+    public bool Explode { get; set; }
+
+    public ISchemaType? Schema { get; set; }
 }
 
 public sealed class ParameterReference : IParameter
@@ -213,10 +229,50 @@ public sealed class RequestBody : IRequestBody
 {
     public string? Description { get; set; }
 
+    public Dictionary<string, MediaType>? Content { get; set; }
+
     public bool Required { get; set; }
 }
 
 public sealed class RequestBodyReference : IRequestBody
+{
+    [JsonPropertyName("$ref")]
+    public string? Ref { get; set; }
+}
+
+public sealed class MediaType
+{
+    public ISchemaType? Schema { get; set; }
+}
+
+public interface ISchemaType;
+
+public sealed class SchemaType : ISchemaType
+{
+    public bool Nullable { get; set; }
+
+    public bool ReadOnly { get; set; }
+
+    public bool WriteOnly { get; set; }
+
+    public bool Deprecated { get; set; }
+
+    public decimal? Minimum { get; set; }
+
+    public decimal? Maximum { get; set; }
+
+    public string? Type { get; set; }
+
+    public string? Description { get; set; }
+
+    public string? Format { get; set; }
+
+    public ISchemaType? Items { get; set; }
+
+    public Dictionary<string, ISchemaType>? Properties { get; set; }
+}
+
+public sealed class SchemaTypeReference : ISchemaType
 {
     [JsonPropertyName("$ref")]
     public string? Ref { get; set; }
@@ -227,10 +283,25 @@ public interface IResponse;
 public sealed class Response : IResponse
 {
     public string? Description { get; set; }
+
+    public Dictionary<string, MediaType>? Content { get; set; }
 }
 
 public sealed class ResponseReference : IResponse
 {
     [JsonPropertyName("$ref")]
     public string? Ref { get; set; }
+}
+
+public sealed class Components
+{
+    public Dictionary<string, ISchemaType>? Schemas { get; set; }
+
+    public Dictionary<string, IResponse>? Responses { get; set; }
+
+    public Dictionary<string, IRequestBody>? RequestBodies { get; set; }
+
+    public Dictionary<string, IParameter>? Parameters { get; set; }
+
+    public Dictionary<string, PathItem>? PathItems { get; set; }
 }

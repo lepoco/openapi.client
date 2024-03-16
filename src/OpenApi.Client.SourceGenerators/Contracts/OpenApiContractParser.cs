@@ -52,20 +52,20 @@ public static class OpenApiContractParser
     {
         HashSet<OpenApiType> types = new();
 
-        foreach (ApiDocumentType type in apiDocumentTypes)
-        {
-            types.Add(
-                new OpenApiType
-                {
-                    Name = type.Name,
-                    Summary = type.Summary,
-                    Properties = type.Properties.ToDictionary(
-                        apiProperty => PascalCaseConverter.Convert(apiProperty.Key), // Property name
-                        apiProperty => PropertyConverter.Convert(apiProperty.Value) // Property type
-                    )
-                }
-            );
-        }
+        //foreach (ApiDocumentType type in apiDocumentTypes)
+        //{
+        //    types.Add(
+        //        new OpenApiType
+        //        {
+        //            Name = type.Name,
+        //            Summary = type.Summary?.Replace("\r\n", " ").Replace("\n", " ").Trim(),
+        //            Properties = type.Properties.ToDictionary(
+        //                apiProperty => PascalCaseConverter.Convert(apiProperty.Key), // Property name
+        //                apiProperty => PropertyConverter.Convert(apiProperty.Value) // Property type
+        //            )
+        //        }
+        //    );
+        //}
 
         return types;
     }

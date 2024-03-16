@@ -54,7 +54,7 @@ public sealed class OpenApiContractParserTests
             apiDocument
         );
 
-        result.Paths.Should().HaveCount(2);
+        result.Paths.Should().HaveCount(3);
     }
 
     [Fact]
@@ -72,6 +72,6 @@ public sealed class OpenApiContractParserTests
             apiDocument
         );
 
-        result.Types.Should().HaveCount(3);
+        result.Types.Should().HaveCount(5);
     }
 }

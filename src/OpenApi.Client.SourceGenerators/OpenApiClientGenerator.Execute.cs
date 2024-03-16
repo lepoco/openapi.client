@@ -6,6 +6,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using OpenApi.Client.SourceGenerators.Contracts;
+using OpenApi.Client.SourceGenerators.Diagnostics;
 using OpenApi.Client.SourceGenerators.Genertion;
 using OpenApi.Client.SourceGenerators.Serialization;
 
@@ -38,6 +39,7 @@ public partial class OpenApiClientGenerator
             )
             {
                 additionalFileContents = file.Contents;
+                break;
             }
         }
 
@@ -45,17 +47,26 @@ public partial class OpenApiClientGenerator
         {
             spc.ReportDiagnostic(
                 Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        id: "OAPIC003",
-                        title: "Error",
-                        messageFormat: $"Document {compilationAndFiles.Contract.SelectedFile} is empty.",
-                        category: "OpenApi.Client.SourceGenerators.DocumentEmpty",
-                        defaultSeverity: DiagnosticSeverity.Error,
-                        isEnabledByDefault: true
-                    ),
-                    Location.None
+                    DiagnosticDescriptors.DocumentMissing,
+                    Location.None,
+                    compilationAndFiles.Contract.SelectedFile
                 )
             );
+
+            return;
+        }
+
+        if (additionalFileContents.Length == 0)
+        {
+            spc.ReportDiagnostic(
+                Diagnostic.Create(
+                    DiagnosticDescriptors.DocumentEmpty,
+                    Location.None,
+                    compilationAndFiles.Contract.SelectedFile
+                )
+            );
+
+            return;
         }
 
         SerializationResult<Schema.IApiDocument>? serializationResult =
@@ -70,38 +81,32 @@ public partial class OpenApiClientGenerator
             {
                 spc.ReportDiagnostic(
                     Diagnostic.Create(
-                        new DiagnosticDescriptor(
-                            id: error.Id,
-                            title: "Error",
-                            messageFormat: error.Message,
-                            category: error.Category,
-                            defaultSeverity: DiagnosticSeverity.Error,
-                            isEnabledByDefault: true
-                        ),
-                        Location.None
+                        DiagnosticDescriptors.DocumentDeserializationFailed,
+                        Location.None,
+                        compilationAndFiles.Contract.SelectedFile,
+                        error.Message
                     )
                 );
             }
+
+            return;
         }
 
         if (serializationResult?.Result is null)
         {
             spc.ReportDiagnostic(
                 Diagnostic.Create(
-                    new DiagnosticDescriptor(
-                        id: "OAPIC001",
-                        title: "Error",
-                        messageFormat: $"Document {compilationAndFiles.Contract.SelectedFile} serialization failed.",
-                        category: "OpenApi.Client.SourceGenerators.DocumentSerializationFailed",
-                        defaultSeverity: DiagnosticSeverity.Error,
-                        isEnabledByDefault: true
-                    ),
-                    Location.None
+                    DiagnosticDescriptors.GenerationFailed,
+                    Location.None,
+                    compilationAndFiles.Contract.SelectedFile,
+                    "Serializer returned empty contract"
                 )
             );
 
             return;
         }
+
+        string? generatedSource = null;
 
         OpenApiContract contract = OpenApiContractParser.Parse(
             compilationAndFiles.Contract.NamespaceName,
@@ -109,11 +114,74 @@ public partial class OpenApiClientGenerator
             compilationAndFiles.Contract.Access,
             serializationResult.Result
         );
-        ClientGenerator generator = new(contract);
+
+        if (contract.Paths.Count == 0)
+        {
+            spc.ReportDiagnostic(
+                Diagnostic.Create(
+                    DiagnosticDescriptors.MissingPaths,
+                    Location.None,
+                    compilationAndFiles.Contract.SelectedFile
+                )
+            );
+
+            return;
+        }
+
+        try
+        {
+            ClientGenerator generator = new(contract);
+            GenerationResult<string> geneatorResult = generator.Generate();
+
+            if (geneatorResult.HasErrors)
+            {
+                foreach (SerializationResultError error in serializationResult.Errors)
+                {
+                    spc.ReportDiagnostic(
+                        Diagnostic.Create(
+                            DiagnosticDescriptors.GenerationFailed,
+                            Location.None,
+                            compilationAndFiles.Contract.SelectedFile,
+                            error.Message
+                        )
+                    );
+                }
+
+                return;
+            }
+
+            generatedSource = geneatorResult.Result;
+        }
+        catch (Exception e)
+        {
+            spc.ReportDiagnostic(
+                Diagnostic.Create(
+                    DiagnosticDescriptors.GenerationFailed,
+                    Location.None,
+                    compilationAndFiles.Contract.SelectedFile,
+                    e.Message
+                )
+            );
+
+            return;
+        }
+
+        if (generatedSource is null)
+        {
+            spc.ReportDiagnostic(
+                Diagnostic.Create(
+                    DiagnosticDescriptors.GeneratedSourceEmpty,
+                    Location.None,
+                    compilationAndFiles.Contract.SelectedFile
+                )
+            );
+
+            return;
+        }
 
         spc.AddSource(
             $"{compilationAndFiles.Contract.ClassName}.g.cs",
-            SourceText.From(generator.Generate(), Encoding.UTF8)
+            SourceText.From(generatedSource, Encoding.UTF8)
         );
     }
 }

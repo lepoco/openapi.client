@@ -18,7 +18,7 @@ internal sealed partial class ClientGenerator(OpenApiContract contract)
         #nullable enable
         """;
 
-    public string Generate()
+    public GenerationResult<string> Generate()
     {
         StringBuilder builder = new StringBuilder(DocumentPrefix);
 

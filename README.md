@@ -9,6 +9,21 @@ The repository contains NuGet package source code, which uses C# code generators
 
 ## Gettings started
 
+OpenApiClient is available as NuGet package on NuGet.org:  
+https://www.nuget.org/packages/OpenApiClient
+
+You can add it to your project using .NET CLI:
+
+```powershell
+dotnet add package OpenApiClient
+```
+
+, or package manager console:
+
+```powershell
+NuGet\Install-Package OpenApiClient
+```
+
 Define an Open API file as content in your  **.csproj** file.
 
 ```xml

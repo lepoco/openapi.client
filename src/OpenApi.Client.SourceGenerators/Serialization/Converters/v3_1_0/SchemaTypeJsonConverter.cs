@@ -3,13 +3,13 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using OpenApi.Client.SourceGenerators.Schema.v3_0_3;
+using OpenApi.Client.SourceGenerators.Schema.v3_1_0;
 
-namespace OpenApi.Client.SourceGenerators.Serialization.Converters.v3_0_3;
+namespace OpenApi.Client.SourceGenerators.Serialization.Converters.v3_1_0;
 
-public sealed class ParameterJsonConverter : JsonConverter<IParameter>
+public sealed class SchemaTypeJsonConverter : JsonConverter<ISchemaType>
 {
-    public override IParameter? Read(
+    public override ISchemaType? Read(
         ref Utf8JsonReader reader,
         Type typeToConvert,
         JsonSerializerOptions options
@@ -20,25 +20,28 @@ public sealed class ParameterJsonConverter : JsonConverter<IParameter>
 
         if (jsonObject.TryGetProperty("$ref", out _))
         {
-            return JsonSerializer.Deserialize<ParameterReference>(jsonObject.GetRawText(), options);
+            return JsonSerializer.Deserialize<SchemaTypeReference>(
+                jsonObject.GetRawText(),
+                options
+            );
         }
 
-        return JsonSerializer.Deserialize<Parameter>(jsonObject.GetRawText(), options);
+        return JsonSerializer.Deserialize<SchemaType>(jsonObject.GetRawText(), options);
     }
 
     public override void Write(
         Utf8JsonWriter writer,
-        IParameter value,
+        ISchemaType value,
         JsonSerializerOptions options
     )
     {
-        if (value is ParameterReference)
+        if (value is SchemaTypeReference)
         {
-            JsonSerializer.Serialize(writer, value as ParameterReference, options);
+            JsonSerializer.Serialize(writer, value as SchemaTypeReference, options);
         }
-        else if (value is Parameter)
+        else if (value is SchemaType)
         {
-            JsonSerializer.Serialize(writer, value as Parameter, options);
+            JsonSerializer.Serialize(writer, value as SchemaType, options);
         }
     }
 }
