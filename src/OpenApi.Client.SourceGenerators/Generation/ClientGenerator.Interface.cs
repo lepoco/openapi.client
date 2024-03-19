@@ -10,9 +10,10 @@ namespace OpenApi.Client.SourceGenerators.Genertion;
 internal sealed partial class ClientGenerator
 {
     public const string InterfaceHeader = """
-            /// <summary>An interface for the <c>%T</c> Open API Client.</summary>
+            /// <summary>An interface for the <c>%TITLE%</c> Open API Client.</summary>
             /// <remarks>Generated with Open API Client Source Generator. See: <see href="https://github.com/lepoco/openapi.client"/></remarks>
-            %A interface I%C
+            [global::System.CodeDom.Compiler.GeneratedCode("OpenApiClient", "%VERSION%")]
+            %ACCESS% interface I%CLASS%
             {
                 /// <summary>Gets the last status code from the HTTP request.</summary>
                 global::System.Net.HttpStatusCode? GetLastStatusCode();
@@ -43,7 +44,7 @@ internal sealed partial class ClientGenerator
                 builder.AppendLine("</summary>");
             }
 
-            builder.Append("        global::System.Threading.Tasks.Task<%CResult");
+            builder.Append("        global::System.Threading.Tasks.Task<%CLASS%Result");
 
             if (path.ResponseType?.Length > 0)
             {

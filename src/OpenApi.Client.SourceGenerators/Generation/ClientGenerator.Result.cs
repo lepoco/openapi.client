@@ -9,10 +9,11 @@ internal sealed partial class ClientGenerator
 {
     public const string ResultTemplate = """
             /// <summary>Represents a result of the API call.</summary>
-            %A struct %CResultError
+            [global::System.CodeDom.Compiler.GeneratedCode("OpenApiClient", "%VERSION%")]
+            %ACCESS% struct %CLASS%ResultError
             {
                 /// <summary>Initializes a new instance of the error struct.</summary>
-                public %CResultError(string message)
+                public %CLASS%ResultError(string message)
                 {
                     Message = message;
                 }
@@ -22,12 +23,13 @@ internal sealed partial class ClientGenerator
             }
 
             /// <summary>Represents a result of the API call.</summary>
-            %A class %CResult
+            [global::System.CodeDom.Compiler.GeneratedCode("OpenApiClient", "%VERSION%")]
+            %ACCESS% class %CLASS%Result
             {
                 /// <summary>Initializes a new instance of the class.</summary>
                 /// <param name="errors">The errors of the API call.</param>
                 /// <param name="statusCode">The status code of the API call.</param>
-                public %CResult(%CResultError[] errors, global::System.Net.HttpStatusCode? statusCode)
+                public %CLASS%Result(%CLASS%ResultError[] errors, global::System.Net.HttpStatusCode? statusCode)
                 {
                     Errors = errors;
                     StatusCode = statusCode;
@@ -35,7 +37,7 @@ internal sealed partial class ClientGenerator
 
                 /// <summary>Initializes a new instance of the result class.</summary>
                 /// <param name="statusCode">The status code of the API call.</param>
-                public %CResult(global::System.Net.HttpStatusCode? statusCode) : this(new %CResultError[0], statusCode)
+                public %CLASS%Result(global::System.Net.HttpStatusCode? statusCode) : this(new %CLASS%ResultError[0], statusCode)
                 {
                 }
 
@@ -43,7 +45,7 @@ internal sealed partial class ClientGenerator
                 public global::System.Net.HttpStatusCode? StatusCode { get; }
 
                 /// <summary>Gets the errors of the API call.</summary>
-                public %CResultError[] Errors { get; }
+                public %CLASS%ResultError[] Errors { get; }
 
                 /// <summary>Gets a value indicating whether the API call has errors.</summary>
                 public bool HasErrors
@@ -56,14 +58,15 @@ internal sealed partial class ClientGenerator
             }
 
             /// <summary>Represents a result from the API.</summary>
-            %A sealed class %CResult<TResult> : %CResult where TResult : class
+            [global::System.CodeDom.Compiler.GeneratedCode("OpenApiClient", "%VERSION%")]
+            %ACCESS% sealed class %CLASS%Result<TResult> : %CLASS%Result where TResult : class
             {
                 private readonly TResult? _result;
 
                 /// <summary>Initializes a new instance of the result class.</summary>
                 /// <param name="result">Result of the API call.</param>
                 /// <param name="statusCode">The status code of the API call.</param>
-                public %CResult(TResult result, global::System.Net.HttpStatusCode? statusCode) : base(statusCode)
+                public %CLASS%Result(TResult result, global::System.Net.HttpStatusCode? statusCode) : base(statusCode)
                 {
                     if (result == null)
                     {
@@ -76,7 +79,7 @@ internal sealed partial class ClientGenerator
                 /// <summary>Initializes a new instance of the result class.</summary>
                 /// <param name="errors">The errors of the API call.</param>
                 /// <param name="statusCode">The errors of the API call.</param>
-                public %CResult(%CResultError[] errors, global::System.Net.HttpStatusCode? statusCode) : base(errors, statusCode)
+                public %CLASS%Result(%CLASS%ResultError[] errors, global::System.Net.HttpStatusCode? statusCode) : base(errors, statusCode)
                 {
                 }
 

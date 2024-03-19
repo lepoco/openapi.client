@@ -10,7 +10,8 @@ namespace OpenApi.Client.SourceGenerators.Genertion;
 internal sealed partial class ClientGenerator
 {
     public const string ClassHeader = """
-            %A partial class %C : I%C
+            [global::System.CodeDom.Compiler.GeneratedCode("OpenApiClient", "%VERSION%")]
+            %ACCESS% partial class %CLASS% : I%CLASS%
             {
                 private global::System.Net.HttpStatusCode? lastStatusCode;
 
@@ -20,7 +21,7 @@ internal sealed partial class ClientGenerator
                 /// <summary>Options for the serializer used to create API objects.</summary>
                 protected readonly global::System.Text.Json.JsonSerializerOptions JsonSettings;
 
-                public %C(global::System.Net.Http.HttpClient httpClient)
+                public %CLASS%(global::System.Net.Http.HttpClient httpClient)
                     : this(httpClient, new global::System.Text.Json.JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true,
@@ -32,11 +33,11 @@ internal sealed partial class ClientGenerator
                 {
                 }
 
-                protected %C() : this(default!, default!)
+                protected %CLASS%() : this(default!, default!)
                 {
                 }
 
-                protected %C(global::System.Net.Http.HttpClient httpClient, global::System.Text.Json.JsonSerializerOptions jsonSettings)
+                protected %CLASS%(global::System.Net.Http.HttpClient httpClient, global::System.Text.Json.JsonSerializerOptions jsonSettings)
                 {
                     HttpClient = httpClient;
                     JsonSettings = jsonSettings;
@@ -160,7 +161,7 @@ internal sealed partial class ClientGenerator
             }
 
             builder.Append(
-                "        public virtual async global::System.Threading.Tasks.Task<%CResult"
+                "        public virtual async global::System.Threading.Tasks.Task<%CLASS%Result"
             );
 
             if (path.ResponseType?.Length > 0)
@@ -210,10 +211,10 @@ internal sealed partial class ClientGenerator
                             }
                             catch (global::System.Exception e)
                             {
-                                return new %CResult(new %CResultError[]{new %CResultError(e.Message)}, lastStatusCode);
+                                return new %CLASS%Result(new %CLASS%ResultError[]{new %CLASS%ResultError(e.Message)}, lastStatusCode);
                             }
 
-                            return new %CResult(lastStatusCode);
+                            return new %CLASS%Result(lastStatusCode);
                         }
                 """
             );

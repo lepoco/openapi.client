@@ -14,41 +14,31 @@ internal static class OpenApiClientGenerationHelper
         #nullable enable
         namespace OpenApi.Client
         {
-            /// <summary>
-            /// Library which API should use at runtime.
-            /// </summary>
+            /// <summary>Library which API client should use at runtime.</summary>
             internal enum OpenApiClientSerialization
             {
                 SystemTextJson,
                 NewtonsoftJson
             }
 
-            /// <summary>An attribute that indicates that a given class should have an Open API Client generated for it.</summary>
+            /// <summary>Indicates that a given class should have an Open API Client generated for it.</summary>
             /// <remarks>Generated with Open API Client Source Generator. See: <see href="https://github.com/lepoco/openapi.client"/></remarks>
             [global::System.AttributeUsage(global::System.AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
             internal sealed class OpenApiClientAttribute : global::System.Attribute
             {
-                /// <summary>
-                /// Initializes a new instance of the <see cref="OpenApiClientAttribute"/> class.
-                /// </summary>
+                /// <summary>Initializes a new instance of the <see cref="OpenApiClientAttribute"/> class.</summary>
                 /// <param name="specification">The specification resource name for the Open API Client.</param>
-                /// <remarks>
-                /// The specification is the name of the resource which is a yaml or json open api code.
-                /// </remarks>
+                /// <remarks>The specification is the name of the resource which is a yaml or json open api code.</remarks>
                 public OpenApiClientAttribute(string specification)
                 {
                     Specification = specification;
                     Serialization = OpenApiClientSerialization.SystemTextJson;
                 }
 
-                /// <summary>
-                /// Initializes a new instance of the <see cref="OpenApiClientAttribute"/> class.
-                /// </summary>
+                /// <summary>Initializes a new instance of the <see cref="OpenApiClientAttribute"/> class.</summary>
                 /// <param name="specification">The specification resource name for the Open API Client.</param>
                 /// <param name="serializationTool">A flag indicating whether to use the Service Collection for the Open API Client.</param>
-                /// <remarks>
-                /// The specification is the name of the resource which is a yaml or json open api code.
-                /// </remarks>
+                /// <remarks>The specification is the name of the resource which is a yaml or json open api code.</remarks>
                 public OpenApiClientAttribute(string specification, OpenApiClientSerialization serializationTool)
                 {
                     Specification = specification;
