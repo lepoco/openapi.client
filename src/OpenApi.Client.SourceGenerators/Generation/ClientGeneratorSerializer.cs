@@ -5,4 +5,8 @@
 
 namespace OpenApi.Client.SourceGenerators.Generation;
 
-public readonly record struct GenerationResultError(string Message);
+public enum ClientGeneratorSerializer
+{
+    SystemTextJson,
+    NewtonsoftJson
+}

@@ -6,7 +6,7 @@
 using Microsoft.CodeAnalysis;
 using OpenApi.Client.Cli.Settings;
 using OpenApi.Client.SourceGenerators.Contracts;
-using OpenApi.Client.SourceGenerators.Genertion;
+using OpenApi.Client.SourceGenerators.Generation;
 using OpenApi.Client.SourceGenerators.Schema;
 using OpenApi.Client.SourceGenerators.Serialization;
 
@@ -70,7 +70,15 @@ public sealed class GenerateCommand : AsyncCommand<GenerateCommandSettings>
             serializationResult.Result
         );
 
-        ClientGenerator generator = new(contract);
+        ClientGenerator generator =
+            new(
+                contract,
+                settings.Serializer switch
+                {
+                    JsonSerializerType.NewtonsoftJson => ClientGeneratorSerializer.NewtonsoftJson,
+                    _ => ClientGeneratorSerializer.SystemTextJson
+                }
+            );
         GenerationResult<string> generatorResult = generator.Generate();
 
         if (generatorResult.HasErrors)
@@ -99,6 +107,8 @@ public sealed class GenerateCommand : AsyncCommand<GenerateCommandSettings>
 
             return -4;
         }
+
+        AnsiConsole.MarkupLine($"[green]Success: File was properly saved to {settings.Output}.[/]");
 
         return 0;
     }

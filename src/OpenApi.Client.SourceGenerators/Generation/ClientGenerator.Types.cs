@@ -5,7 +5,7 @@
 
 using OpenApi.Client.SourceGenerators.Contracts;
 
-namespace OpenApi.Client.SourceGenerators.Genertion;
+namespace OpenApi.Client.SourceGenerators.Generation;
 
 internal sealed partial class ClientGenerator
 {

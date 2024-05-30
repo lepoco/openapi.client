@@ -7,7 +7,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
 using OpenApi.Client.SourceGenerators.Contracts;
 using OpenApi.Client.SourceGenerators.Diagnostics;
-using OpenApi.Client.SourceGenerators.Genertion;
+using OpenApi.Client.SourceGenerators.Generation;
 using OpenApi.Client.SourceGenerators.Serialization;
 
 namespace OpenApi.Client.SourceGenerators;
@@ -130,10 +130,19 @@ public partial class OpenApiClientGenerator
 
         try
         {
-            ClientGenerator generator = new(contract);
-            GenerationResult<string> geneatorResult = generator.Generate();
+            ClientGenerator generator =
+                new(
+                    contract,
+                    compilationAndFiles.Contract.SerializationTool switch
+                    {
+                        RequestedSerializationTool.NewtonsoftJson
+                            => ClientGeneratorSerializer.NewtonsoftJson,
+                        _ => ClientGeneratorSerializer.SystemTextJson
+                    }
+                );
+            GenerationResult<string> generatorResult = generator.Generate();
 
-            if (geneatorResult.HasErrors)
+            if (generatorResult.HasErrors)
             {
                 foreach (SerializationResultError error in serializationResult.Errors)
                 {
@@ -150,7 +159,7 @@ public partial class OpenApiClientGenerator
                 return;
             }
 
-            generatedSource = geneatorResult.Result;
+            generatedSource = generatorResult.Result;
         }
         catch (Exception e)
         {

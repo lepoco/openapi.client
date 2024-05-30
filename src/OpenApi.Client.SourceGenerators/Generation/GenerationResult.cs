@@ -3,7 +3,7 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-namespace OpenApi.Client.SourceGenerators.Genertion;
+namespace OpenApi.Client.SourceGenerators.Generation;
 
 public sealed class GenerationResult<TResult>
 {

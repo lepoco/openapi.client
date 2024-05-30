@@ -5,7 +5,7 @@
 
 using Microsoft.CodeAnalysis;
 using OpenApi.Client.SourceGenerators.Converters;
-using OpenApi.Client.SourceGenerators.Genertion;
+using OpenApi.Client.SourceGenerators.Generation;
 using OpenApi.Client.SourceGenerators.Schema;
 
 namespace OpenApi.Client.SourceGenerators.Contracts;

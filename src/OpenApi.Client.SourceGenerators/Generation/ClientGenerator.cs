@@ -5,9 +5,12 @@
 
 using OpenApi.Client.SourceGenerators.Contracts;
 
-namespace OpenApi.Client.SourceGenerators.Genertion;
+namespace OpenApi.Client.SourceGenerators.Generation;
 
-internal sealed partial class ClientGenerator(OpenApiContract contract)
+internal sealed partial class ClientGenerator(
+    OpenApiContract contract,
+    ClientGeneratorSerializer serializer
+)
 {
     public const string GeneratorVersion = "1.0.0";
 
@@ -22,25 +25,20 @@ internal sealed partial class ClientGenerator(OpenApiContract contract)
 
     public GenerationResult<string> Generate()
     {
-        StringBuilder builder = new StringBuilder(DocumentPrefix);
+        StringBuilder builder = new(DocumentPrefix);
 
         builder.AppendLine();
         builder.Append("namespace ");
         builder.AppendLine(contract.Namespace);
         builder.AppendLine("{");
 
-        // Result
         builder.AppendLine(ResultTemplate);
         builder.AppendLine();
 
-        // Interface
         AppendInterface(builder, contract);
-        builder.AppendLine();
-
-        // Class
-        AppendClass(builder, contract);
-
-        // Types
+        AppendClass(builder, contract, serializer);
+        AppendAttributes(builder, contract);
+        AppendSerializer(builder, contract, serializer);
         AppendTypes(builder, contract);
 
         builder.AppendLine("}");

@@ -5,47 +5,80 @@
 
 using OpenApi.Client.SourceGenerators.Contracts;
 
-namespace OpenApi.Client.SourceGenerators.Genertion;
+namespace OpenApi.Client.SourceGenerators.Generation;
 
 internal sealed partial class ClientGenerator
 {
-    public const string ClassHeader = """
+    private const string SystemTextJsonClassHeader = """
             [global::System.CodeDom.Compiler.GeneratedCode("OpenApiClient", "%VERSION%")]
             %ACCESS% partial class %CLASS% : I%CLASS%
             {
                 private global::System.Net.HttpStatusCode? lastStatusCode;
 
+                /// <summary>The JSON serializer used for the Open API Client.</summary>
+                protected IOpenApiJsonSerializer serializer;
+
                 /// <summary>The HTTP Client used for the Open API Client.</summary>
-                protected readonly global::System.Net.Http.HttpClient HttpClient;
+                protected global::System.Net.Http.HttpClient HttpClient;
 
-                /// <summary>Options for the serializer used to create API objects.</summary>
-                protected readonly global::System.Text.Json.JsonSerializerOptions JsonSettings;
-
+                /// <summary>Initializes a new instance of the <see cref="OpenApiTest"/> class using the provided HttpClient. Uses a default instance of <see cref="IOpenApiJsonSerializer"/> for serialization.</summary>
                 public %CLASS%(global::System.Net.Http.HttpClient httpClient)
-                    : this(httpClient, new global::System.Text.Json.JsonSerializerOptions
-                    {
-                        PropertyNameCaseInsensitive = true,
-                        Converters =
-                        {
-                            new global::System.Text.Json.Serialization.JsonStringEnumConverter()
-                        }
-                    })
-                {
-                }
-
-                protected %CLASS%() : this(default!, default!)
-                {
-                }
-
-                protected %CLASS%(global::System.Net.Http.HttpClient httpClient, global::System.Text.Json.JsonSerializerOptions jsonSettings)
                 {
                     HttpClient = httpClient;
-                    JsonSettings = jsonSettings;
+                    serializer = new OpenApiJsonSerializer();
+                }
+
+                /// <summary>Initializes a new instance of the <see cref="OpenApiTest"/> class using the provided HttpClient and JsonSerializerOptions. Uses an instance of <see cref="IOpenApiJsonSerializer"/> configured with the provided <see cref="System.Text.Json.JsonSerializerOptions"/> for serialization.</summary>
+                public %CLASS%(global::System.Net.Http.HttpClient httpClient, global::System.Text.Json.JsonSerializerOptions jsonSettings)
+                {
+                    HttpClient = httpClient;
+                    serializer = new OpenApiJsonSerializer(jsonSettings);
+                }
+
+                /// <summary>Initializes a new instance of the <see cref="OpenApiTest"/> class using the provided HttpClient and IOpenApiJsonSerializer.</summary>
+                public %CLASS%(global::System.Net.Http.HttpClient httpClient, IOpenApiJsonSerializer serializer)
+                {
+                    HttpClient = httpClient;
+                    serializer = serializer;
                 }
 
         """;
 
-    public const string ClassFooter = """
+    private const string NewtonsoftJsonClassHeader = """
+            [global::System.CodeDom.Compiler.GeneratedCode("OpenApiClient", "%VERSION%")]
+            %ACCESS% partial class %CLASS% : I%CLASS%
+            {
+                private global::System.Net.HttpStatusCode? lastStatusCode;
+
+                private OpenApiJsonSerializer serializer;
+
+                /// <summary>The HTTP Client used for the Open API Client.</summary>
+                protected readonly global::System.Net.Http.HttpClient HttpClient;
+
+                /// <summary>Initializes a new instance of the <see cref="OpenApiTest"/> class using the provided HttpClient. Uses a default instance of <see cref="IOpenApiJsonSerializer"/> for serialization.</summary>
+                public %CLASS%(global::System.Net.Http.HttpClient httpClient)
+                {
+                    HttpClient = httpClient;
+                    serializer = new OpenApiJsonSerializer();
+                }
+
+                /// <summary>Initializes a new instance of the <see cref="OpenApiTest"/> class using the provided HttpClient and JsonSerializerOptions. Uses an instance of <see cref="IOpenApiJsonSerializer"/> configured with the provided <see cref="Newtonsoft.Json.JsonSerializerSettings"/> for serialization.</summary>
+                public %CLASS%(global::System.Net.Http.HttpClient httpClient, global::Newtonsoft.Json.JsonSerializerSettings jsonSettings)
+                {
+                    HttpClient = httpClient;
+                    serializer = new OpenApiJsonSerializer(jsonSettings);
+                }
+
+                /// <summary>Initializes a new instance of the <see cref="OpenApiTest"/> class using the provided HttpClient and IOpenApiJsonSerializer.</summary>
+                public %CLASS%(global::System.Net.Http.HttpClient httpClient, IOpenApiJsonSerializer serializer)
+                {
+                    HttpClient = httpClient;
+                    serializer = serializer;
+                }
+
+        """;
+
+    private const string ClassFooter = """
                 /// <inheritdoc/>
                 public virtual global::System.Net.HttpStatusCode? GetLastStatusCode()
                 {
@@ -91,7 +124,7 @@ internal sealed partial class ClientGenerator
                         return null;
                     }
 
-                    return global::System.Text.Json.JsonSerializer.Serialize(input, JsonSettings);
+                    return serializer.Serialize(input);
                 }
 
                 /// <summary>Tries to serialize body returned by HTTP request.</summary>
@@ -102,7 +135,18 @@ internal sealed partial class ClientGenerator
                         return default;
                     }
 
-                    return global::System.Text.Json.JsonSerializer.Deserialize<TResponse>(input, JsonSettings);
+                    return serializer.Deserialize<TResponse>(input);
+                }
+
+                /// <summary>Computes path string for HTTP request.</summary>
+                protected virtual string? ComputePath(string? path, params string[] parameters)
+                {
+                    if (parameters.Length == 0)
+                    {
+                        return path;
+                    }
+
+                    return string.Format(path, parameters);
                 }
 
                 /// <summary>Computes query string for HTTP request.</summary>
@@ -127,7 +171,10 @@ internal sealed partial class ClientGenerator
                                 queryString.Append("&");
                             }
 
-                            queryString.Append(global::System.Uri.EscapeDataString(property.Name));
+                            OpenApiPropertyAttribute? attribute = global::System.Reflection.CustomAttributeExtensions.GetCustomAttribute<OpenApiPropertyAttribute>(property);
+                            string name = attribute?.Name ?? property.Name;
+
+                            queryString.Append(global::System.Uri.EscapeDataString(name));
                             queryString.Append('=');
                             queryString.Append(global::System.Uri.EscapeDataString(value));
                         }
@@ -141,11 +188,20 @@ internal sealed partial class ClientGenerator
                     return queryString.ToString();
                 }
             }
+
         """;
 
-    public static void AppendClass(StringBuilder builder, OpenApiContract contract)
+    private static void AppendClass(
+        StringBuilder builder,
+        OpenApiContract contract,
+        ClientGeneratorSerializer serializer
+    )
     {
-        builder.AppendLine(ClassHeader);
+        builder.AppendLine(
+            serializer == ClientGeneratorSerializer.SystemTextJson
+                ? SystemTextJsonClassHeader
+                : NewtonsoftJsonClassHeader
+        );
         int methodsCount = 0;
 
         foreach (OpenApiPath path in contract.Paths)
@@ -192,17 +248,18 @@ internal sealed partial class ClientGenerator
                 $$$"""
                         {
                             string? responseBody = null;
+                            string[] pathParameters = new string[0];
 
                             try
                             {
                                 responseBody = await ExecuteRequestAsync(
                                     global::System.Net.Http.HttpMethod.Get,
-                                    {{{(
+                                    ComputePath({{{(
                     "\""
                     + path.Path
                     + "\""
                     + (path.RequestQueryType?.Length > 0 ? " + ComputeQueryString(query)" : null)
-                )}}},
+                )}}}, pathParameters),
                                     {{{(
                     path.RequestBodyType?.Length > 0 ? "SerializeRequest(request)" : "null"
                 )}}},
@@ -216,6 +273,7 @@ internal sealed partial class ClientGenerator
 
                             return new %CLASS%Result(lastStatusCode);
                         }
+
                 """
             );
 

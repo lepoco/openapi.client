@@ -3,7 +3,7 @@
     "OpenApiClient.Cli [Test]": {
       "commandName": "Project",
       "workingDirectory": "$(ProjectDir)",
-      "commandLineArgs": "generate ..\\..\\tests\\OpenApi.Client.SourceGenerators.Roslyn431.UnitTests\\OpenApis\\openapi-3.1.0.json --output bin\\OpenApiTest.cs"
+      "commandLineArgs": "generate ..\\..\\tests\\OpenApi.Client.SourceGenerators.Roslyn431.UnitTests\\OpenApis\\openapi-3.0.1.extended.json --output bin\\UsersClient.cs --namespace Clients.Users --classname UsersClient"
     }
   }
 }

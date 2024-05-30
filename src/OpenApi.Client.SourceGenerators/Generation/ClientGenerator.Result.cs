@@ -3,7 +3,7 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-namespace OpenApi.Client.SourceGenerators.Genertion;
+namespace OpenApi.Client.SourceGenerators.Generation;
 
 internal sealed partial class ClientGenerator
 {
@@ -21,10 +21,21 @@ internal sealed partial class ClientGenerator
                 /// <summary>Gets the error message.</summary>
                 public string? Message { get; }
             }
+            
+            /// <summary>Represents a result of the API call.</summary>
+            [global::System.CodeDom.Compiler.GeneratedCode("OpenApiClient", "%VERSION%")]
+            %ACCESS% interface I%CLASS%Result
+            {
+                /// <summary>Gets a value indicating whether the API call has errors.</summary>
+                bool HasErrors { get; }
+                
+                /// <summary>Gets a value indicating whether the API call succeeded.</summary>
+                bool IsSucceeded{ get; }
+            }
 
             /// <summary>Represents a result of the API call.</summary>
             [global::System.CodeDom.Compiler.GeneratedCode("OpenApiClient", "%VERSION%")]
-            %ACCESS% class %CLASS%Result
+            %ACCESS% class %CLASS%Result : I%CLASS%Result
             {
                 /// <summary>Initializes a new instance of the class.</summary>
                 /// <param name="errors">The errors of the API call.</param>
@@ -47,12 +58,21 @@ internal sealed partial class ClientGenerator
                 /// <summary>Gets the errors of the API call.</summary>
                 public %CLASS%ResultError[] Errors { get; }
 
-                /// <summary>Gets a value indicating whether the API call has errors.</summary>
+                /// <inheritdoc/>
                 public bool HasErrors
                 {
                     get
                     {
                         return Errors.Length > 0;
+                    }
+                }
+                
+                /// <inheritdoc/>
+                public bool IsSucceeded
+                {
+                    get
+                    {
+                        return !HasErrors;
                     }
                 }
             }

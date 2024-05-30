@@ -21,11 +21,14 @@
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\DiagnosticsExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ISymbolExtensions.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Extensions\ITypeSymbolExtensions.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Generation\ClientGenerator.Attributes.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Generation\ClientGenerator.Class.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Generation\ClientGenerator.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Generation\ClientGenerator.Interface.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Generation\ClientGenerator.Result.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Generation\ClientGenerator.Serializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Generation\ClientGenerator.Types.cs" />
+    <Compile Include="$(MSBuildThisFileDirectory)Generation\ClientGeneratorSerializer.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)generation\GenerationResult.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)generation\GenerationResultError.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Helpers\EquatableArray{T}.cs" />

@@ -70,28 +70,28 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
 
         foreach (AttributeData attribute in attributes)
         {
-            if (attribute.AttributeClass?.Name == MarkerAttributeName)
+            if (attribute.AttributeClass?.Name != MarkerAttributeName)
             {
-                location = attribute.ApplicationSyntaxReference?.SyntaxTree.GetLocation(
-                    attribute.ApplicationSyntaxReference.Span
-                );
+                continue;
+            }
 
-                if (attribute.ConstructorArguments.Length > 0)
+            location = attribute.ApplicationSyntaxReference?.SyntaxTree.GetLocation(
+                attribute.ApplicationSyntaxReference.Span
+            );
+
+            if (attribute.ConstructorArguments.Length > 0)
+            {
+                TypedConstant specificationArgument = attribute.ConstructorArguments[0];
+                specification = (string?)specificationArgument.Value ?? string.Empty;
+            }
+
+            if (attribute.ConstructorArguments.Length > 1)
+            {
+                TypedConstant useDependencyInjectionArgument = attribute.ConstructorArguments[1];
+
+                if (((int?)useDependencyInjectionArgument.Value ?? 0) == 1)
                 {
-                    TypedConstant specificationArgument = attribute.ConstructorArguments[0];
-                    specification = (string?)specificationArgument.Value ?? string.Empty;
-                }
-
-                if (attribute.ConstructorArguments.Length > 1)
-                {
-                    TypedConstant useDependencyInjectionArgument = attribute.ConstructorArguments[
-                        1
-                    ];
-
-                    if (((int?)useDependencyInjectionArgument.Value ?? 0) == 1)
-                    {
-                        serializationTool = RequestedSerializationTool.NewtonsoftJson;
-                    }
+                    serializationTool = RequestedSerializationTool.NewtonsoftJson;
                 }
             }
         }
