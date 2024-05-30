@@ -3,8 +3,15 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using Spectre.Console.Cli;
-
 namespace OpenApi.Client.Cli.Settings;
 
-public sealed class GenerateCommandSettings : CommandSettings { }
+public sealed class GenerateCommandSettings : CommandSettings
+{
+    [CommandOption("-f|--file <PATH>")]
+    [Description("The Open API file to parse.")]
+    public string File { get; set; }
+
+    [CommandOption("-o|--output <PATH>")]
+    [Description("The output directory.")]
+    public string Output { get; set; }
+}

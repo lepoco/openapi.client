@@ -3,10 +3,8 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using Microsoft.Extensions.Hosting;
 using OpenApi.Client.Cli.Commands;
 using OpenApi.Client.Cli.DependencyInjection;
-using Spectre.Console.Cli;
 
 IHostBuilder builder = Host.CreateDefaultBuilder(args);
 DependencyInjectionRegistrar registrar = new(builder);

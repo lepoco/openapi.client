@@ -3,30 +3,27 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using System.Threading.Tasks;
 using OpenApi.Client.Cli.Settings;
-using Spectre.Console;
-using Spectre.Console.Cli;
 
 namespace OpenApi.Client.Cli.Commands;
 
-public sealed class GenerateCommand : ICommand<GenerateCommandSettings>
+public sealed class GenerateCommand : AsyncCommand<GenerateCommandSettings>
 {
     /// <inheritdoc />
-    public Task<int> Execute(CommandContext context, GenerateCommandSettings settings)
+    public override async Task<int> ExecuteAsync(CommandContext context, GenerateCommandSettings settings)
     {
-        throw new NotImplementedException();
+        await Task.CompletedTask;
+
+        return 0;
     }
 
-    /// <inheritdoc />
-    public ValidationResult Validate(CommandContext context, CommandSettings settings)
+    public override ValidationResult Validate(CommandContext context, GenerateCommandSettings settings)
     {
-        throw new NotImplementedException();
-    }
+        if (!Path.Exists(settings.File))
+        {
+            return ValidationResult.Error($"The file '{settings.File}' does not exist.");
+        }
 
-    /// <inheritdoc />
-    public Task<int> Execute(CommandContext context, CommandSettings settings)
-    {
-        throw new NotImplementedException();
+        return ValidationResult.Success();
     }
 }

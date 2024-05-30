@@ -3,10 +3,6 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-using Spectre.Console.Cli;
-
 namespace OpenApi.Client.Cli.DependencyInjection;
 
 internal sealed class DependencyInjectionRegistrar(IHostBuilder builder) : ITypeRegistrar
