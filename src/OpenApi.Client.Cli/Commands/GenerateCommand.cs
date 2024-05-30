@@ -80,16 +80,25 @@ public sealed class GenerateCommand : AsyncCommand<GenerateCommandSettings>
                 AnsiConsole.MarkupLine($"[red]Error: {generatorResultError.Message}[/]");
             }
 
-            return -1;
+            return -3;
         }
 
         generatedSource = generatorResult.Result;
 
-        await File.WriteAllTextAsync(
-            settings.Output,
-            generatedSource,
-            cancellationTokenSource.Token
-        );
+        try
+        {
+            await File.WriteAllTextAsync(
+                settings.Output,
+                generatedSource,
+                cancellationTokenSource.Token
+            );
+        }
+        catch (Exception e)
+        {
+            AnsiConsole.MarkupLine($"[red]Error: {e.Message}[/]");
+
+            return -4;
+        }
 
         return 0;
     }
