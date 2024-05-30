@@ -1,9 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
+    <AssemblyName>openapiclient</AssemblyName>
     <PackageId>OpenApiClient.Cli</PackageId>
     <TargetFramework>net8.0</TargetFramework>
     <OutputType>exe</OutputType>
+    <PackAsTool>true</PackAsTool>
+    <ToolCommandName>openapiclient</ToolCommandName>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
   </PropertyGroup>
 
   <Import Project="..\OpenApi.Client.SourceGenerators\OpenApi.Client.SourceGenerators.projitems" Label="Shared" />

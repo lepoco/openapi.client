@@ -13,7 +13,14 @@ CommandApp app = new(registrar);
 
 app.Configure(config =>
 {
-    config.AddCommand<GenerateCommand>("generate");
+    config.Settings.ApplicationName = "openapiclient";
+    config.Settings.CaseSensitivity = CaseSensitivity.None;
+
+    config
+        .AddCommand<GenerateCommand>("generate")
+        .WithDescription("Generates the Open API Client from the provided json.")
+        .WithExample(["generate", "my-open-api.json", "--output", "MyOpenApiClient.cs"]);
+    ;
 });
 
 await app.RunAsync(args);

@@ -3,9 +3,9 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
+global using System.ComponentModel;
+global using System.Threading.Tasks;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Hosting;
 global using Spectre.Console;
 global using Spectre.Console.Cli;
-global using System.ComponentModel;
-global using System.Threading.Tasks;
