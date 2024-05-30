@@ -32,6 +32,20 @@ public sealed class GenerateCommandSettings : CommandSettings
     public string Output { get; set; } = "./";
 
     /// <summary>
+    /// Gets or sets the name of the generated class.
+    /// </summary>
+    [CommandOption("-c|--classname <NAMESPACE>")]
+    [Description("The name of the generated class..")]
+    public string ClassName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Gets or sets the namespace for the generated class.
+    /// </summary>
+    [CommandOption("-n|--namespace <NAMESPACE>")]
+    [Description("The namespace in which the class is to be placed.")]
+    public string Namespace { get; set; } = "OpenApi";
+
+    /// <summary>
     /// Gets or sets the JSON serializer to use. If not provided, System.Text.Json is used.
     /// </summary>
     [CommandOption("-s|--serializer <TYPE>")]
