@@ -28,4 +28,4 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build src\OpenApi.Client\OpenApi.Client.csproj --configuration Release --no-restore
+        run: dotnet build OpenApi.Client.sln --configuration Release --no-restore

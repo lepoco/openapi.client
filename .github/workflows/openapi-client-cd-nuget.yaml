@@ -28,5 +28,8 @@ jobs:
       - name: Build
         run: dotnet build src\OpenApi.Client\OpenApi.Client.csproj --configuration Release --no-restore
 
+      - name: Build
+        run: dotnet build src\OpenApi.Client.Cli\OpenApi.Client.Cli.csproj --configuration Release --no-restore
+
       - name: Publish the package to NuGet.org
         run: nuget push **\*.nupkg -NonInteractive -SkipDuplicate -Source 'https://api.nuget.org/v3/index.json'
