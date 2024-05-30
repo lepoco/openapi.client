@@ -32,7 +32,9 @@ internal sealed partial class ClientGenerator
                 builder.AppendLine("</summary>");
             }
 
-            builder.AppendLine("    [global::System.CodeDom.Compiler.GeneratedCode(\"OpenApiClient\", \"%VERSION%\")]");
+            builder.AppendLine(
+                "    [global::System.CodeDom.Compiler.GeneratedCode(\"OpenApiClient\", \"%VERSION%\")]"
+            );
             builder.Append("    public sealed class ");
             builder.AppendLine(type.Name);
             builder.AppendLine("    {");
