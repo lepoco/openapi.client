@@ -24,6 +24,12 @@ dotnet add package OpenApiClient
 NuGet\Install-Package OpenApiClient
 ```
 
+, you can also use the .NET CLI tool to generate the classes using commands
+
+```powershell
+dotnet tool install --global OpenApiClient.Cli
+```
+
 Define an Open API file as content in your  **.csproj** file.
 
 ```xml

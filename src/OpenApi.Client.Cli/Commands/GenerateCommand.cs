@@ -3,6 +3,7 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
+using System.Text.RegularExpressions;
 using OpenApi.Client.Cli.Settings;
 using OpenApi.Client.SourceGenerators.Schema;
 using OpenApi.Client.SourceGenerators.Serialization;
@@ -19,6 +20,8 @@ namespace OpenApi.Client.Cli.Commands;
 // ReSharper disable once ClassNeverInstantiated.Global
 public sealed class GenerateCommand : AsyncCommand<GenerateCommandSettings>
 {
+    private static readonly Regex PathNormalizer = new(@"(\\\\|//)", RegexOptions.Compiled);
+
     /// <inheritdoc />
     public override async Task<int> ExecuteAsync(
         CommandContext context,
@@ -39,6 +42,9 @@ public sealed class GenerateCommand : AsyncCommand<GenerateCommandSettings>
         GenerateCommandSettings settings
     )
     {
+        settings.File = PathNormalizer.Replace(settings.File, "/");
+        settings.File = settings.File.Replace("\\", "/");
+
         if (!Path.Exists(settings.File))
         {
             return ValidationResult.Error($"The file '{settings.File}' does not exist.");
