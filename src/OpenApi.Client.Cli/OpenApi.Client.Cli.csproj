@@ -8,6 +8,8 @@
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>openapiclient</ToolCommandName>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <CommonTags>$(CommonTags);cli;command;tool</CommonTags>
+    <Description>Your friendly neighborhood tool for generating C# client classes from Open API jsons!</Description>
   </PropertyGroup>
 
   <Import Project="..\OpenApi.Client.SourceGenerators\OpenApi.Client.SourceGenerators.projitems" Label="Shared" />

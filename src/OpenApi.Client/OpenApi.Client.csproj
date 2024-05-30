@@ -4,6 +4,7 @@
     <PackageId>OpenApiClient</PackageId>
     <TargetFrameworks>netstandard2.0;netstandard2.1;net6.0;net8.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Description>OpenAPI Client is a toolkit with source generators that helps you create HTTP clients for external APIs based on their OpenAPI specifications. It simplifies the process of consuming and interacting with various web services.</Description>
   </PropertyGroup>
 
   <!-- Necessary polyfills -->
