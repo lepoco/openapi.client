@@ -24,3 +24,5 @@ app.Configure(config =>
 });
 
 await app.RunAsync(args);
+
+return;

@@ -40,23 +40,6 @@
     <Compile Include="$(MSBuildThisFileDirectory)OpenApiClientGenerator.Execute.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Polyfills\GeneratorAttributeSyntaxContext.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Polyfills\SyntaxValueProviderExtensions.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Schema\ApiDocumentMethod.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Schema\ApiDocumentPath.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Schema\ApiDocumentType.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Schema\ApiDocumentVersion.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Schema\IApiDocument.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Schema\v1_2_0\ApiDocument.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Schema\v2_0_0\ApiDocument.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Schema\v3_1_0\ApiDocument.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Converters\v2_0_0\ParameterJsonConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Converters\v2_0_0\ResponseJsonConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Converters\v3_1_0\SchemaTypeJsonConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Converters\v3_1_0\ParameterJsonConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Converters\v3_1_0\RequestBodyJsonConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\Converters\v3_1_0\ResponseJsonConverter.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\OpenApiSerializer.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\SerializationResult.cs" />
-    <Compile Include="$(MSBuildThisFileDirectory)Serialization\SerializationResultError.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)Usings.cs" />
   </ItemGroup>
   <ItemGroup>

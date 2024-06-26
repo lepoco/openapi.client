@@ -40,6 +40,12 @@
     <!-- Include external dependencies -->
     <None Include="$(NuGetPackageRoot)microsoft.bcl.asyncinterfaces\8.0.0\lib\netstandard2.0\Microsoft.Bcl.AsyncInterfaces.dll" PackagePath="analyzers\dotnet\roslyn4.0\cs" Pack="true" Visible="false" />
     <None Include="$(NuGetPackageRoot)microsoft.bcl.asyncinterfaces\8.0.0\lib\netstandard2.0\Microsoft.Bcl.AsyncInterfaces.dll" PackagePath="analyzers\dotnet\roslyn4.3\cs" Pack="true" Visible="false" />
+    <None Include="$(NuGetPackageRoot)microsoft.openapi\1.6.15\lib\netstandard2.0\Microsoft.OpenApi.dll" PackagePath="analyzers\dotnet\roslyn4.0\cs" Pack="true" Visible="false" />
+    <None Include="$(NuGetPackageRoot)microsoft.openapi\1.6.15\lib\netstandard2.0\Microsoft.OpenApi.dll" PackagePath="analyzers\dotnet\roslyn4.3\cs" Pack="true" Visible="false" />
+    <None Include="$(NuGetPackageRoot)microsoft.openapi.readers\1.6.15\lib\netstandard2.0\Microsoft.OpenApi.Readers.dll" PackagePath="analyzers\dotnet\roslyn4.0\cs" Pack="true" Visible="false" />
+    <None Include="$(NuGetPackageRoot)microsoft.openapi.readers\1.6.15\lib\netstandard2.0\Microsoft.OpenApi.Readers.dll" PackagePath="analyzers\dotnet\roslyn4.3\cs" Pack="true" Visible="false" />
+    <None Include="$(NuGetPackageRoot)sharpyaml\2.1.1\lib\netstandard2.0\SharpYaml.dll" PackagePath="analyzers\dotnet\roslyn4.0\cs" Pack="true" Visible="false" />
+    <None Include="$(NuGetPackageRoot)sharpyaml\2.1.1\lib\netstandard2.0\SharpYaml.dll" PackagePath="analyzers\dotnet\roslyn4.3\cs" Pack="true" Visible="false" />
     <None Include="$(NuGetPackageRoot)system.buffers\4.5.1\lib\netstandard2.0\System.Buffers.dll" PackagePath="analyzers\dotnet\roslyn4.0\cs" Pack="true" Visible="false" />
     <None Include="$(NuGetPackageRoot)system.buffers\4.5.1\lib\netstandard2.0\System.Buffers.dll" PackagePath="analyzers\dotnet\roslyn4.3\cs" Pack="true" Visible="false" />
     <None Include="$(NuGetPackageRoot)system.memory\4.5.5\lib\netstandard2.0\System.Memory.dll" PackagePath="analyzers\dotnet\roslyn4.0\cs" Pack="true" Visible="false" />

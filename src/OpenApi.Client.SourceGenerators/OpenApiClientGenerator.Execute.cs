@@ -5,10 +5,11 @@
 
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
+using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Readers;
 using OpenApi.Client.SourceGenerators.Contracts;
 using OpenApi.Client.SourceGenerators.Diagnostics;
 using OpenApi.Client.SourceGenerators.Generation;
-using OpenApi.Client.SourceGenerators.Serialization;
 
 namespace OpenApi.Client.SourceGenerators;
 
@@ -69,15 +70,14 @@ public partial class OpenApiClientGenerator
             return;
         }
 
-        SerializationResult<Schema.IApiDocument>? serializationResult =
-            new OpenApiSerializer().Deserialize(
-                compilationAndFiles.Contract.SelectedFile,
-                additionalFileContents
-            );
+        OpenApiDocument? serializationResult = new OpenApiStreamReader().Read(
+            new MemoryStream(Encoding.UTF8.GetBytes(compilationAndFiles.Contract.SelectedFile)),
+            out OpenApiDiagnostic? diagnostic
+        );
 
-        if (serializationResult?.HasErrors ?? false)
+        if (diagnostic?.Errors.Count > 0)
         {
-            foreach (SerializationResultError error in serializationResult.Errors)
+            foreach (OpenApiError? error in diagnostic.Errors)
             {
                 spc.ReportDiagnostic(
                     Diagnostic.Create(
@@ -92,7 +92,7 @@ public partial class OpenApiClientGenerator
             return;
         }
 
-        if (serializationResult?.Result is null)
+        if (serializationResult is null)
         {
             spc.ReportDiagnostic(
                 Diagnostic.Create(
@@ -112,7 +112,7 @@ public partial class OpenApiClientGenerator
             compilationAndFiles.Contract.NamespaceName,
             compilationAndFiles.Contract.ClassName,
             compilationAndFiles.Contract.Access,
-            serializationResult.Result
+            serializationResult
         );
 
         if (contract.Paths.Count == 0)
@@ -144,7 +144,7 @@ public partial class OpenApiClientGenerator
 
             if (generatorResult.HasErrors)
             {
-                foreach (SerializationResultError error in serializationResult.Errors)
+                foreach (GenerationResultError error in generatorResult.Errors)
                 {
                     spc.ReportDiagnostic(
                         Diagnostic.Create(

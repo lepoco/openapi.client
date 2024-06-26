@@ -15,6 +15,7 @@
   <Import Project="..\OpenApi.Client.SourceGenerators\OpenApi.Client.SourceGenerators.projitems" Label="Shared" />
 
   <ItemGroup>
+    <PackageReference Include="SharpYaml" />
     <PackageReference Include="System.Buffers" />
     <PackageReference Include="System.Memory" />
     <PackageReference Include="System.Numerics.Vectors" />
@@ -24,6 +25,8 @@
     <PackageReference Include="System.Threading.Tasks.Extensions" />
     <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
+    <PackageReference Include="Microsoft.OpenApi" />
+    <PackageReference Include="Microsoft.OpenApi.Readers" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
     <PackageReference Include="Spectre.Console" />
     <PackageReference Include="Spectre.Console.Analyzer">

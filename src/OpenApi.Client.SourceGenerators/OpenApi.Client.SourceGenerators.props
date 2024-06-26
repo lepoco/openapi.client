@@ -35,6 +35,8 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.OpenApi" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.OpenApi.Readers" PrivateAssets="all" GeneratePathProperty="true" />
     <PackageReference Include="System.Buffers" PrivateAssets="all" GeneratePathProperty="true" />
     <PackageReference Include="System.Memory" PrivateAssets="all" GeneratePathProperty="true" />
     <PackageReference Include="System.Numerics.Vectors" PrivateAssets="all" GeneratePathProperty="true" />
@@ -42,6 +44,7 @@
     <PackageReference Include="System.Text.Encodings.Web" PrivateAssets="all" GeneratePathProperty="true" />
     <PackageReference Include="System.Text.Json" PrivateAssets="all" GeneratePathProperty="true" />
     <PackageReference Include="System.Threading.Tasks.Extensions" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="SharpYaml" PrivateAssets="all" GeneratePathProperty="true" />
   </ItemGroup>
 
   <ItemGroup>

@@ -4,11 +4,11 @@
 // All Rights Reserved.
 
 using Microsoft.CodeAnalysis;
+using Microsoft.OpenApi.Models;
+using Microsoft.OpenApi.Readers;
 using OpenApi.Client.Cli.Settings;
 using OpenApi.Client.SourceGenerators.Contracts;
 using OpenApi.Client.SourceGenerators.Generation;
-using OpenApi.Client.SourceGenerators.Schema;
-using OpenApi.Client.SourceGenerators.Serialization;
 
 namespace OpenApi.Client.Cli.Commands;
 
@@ -37,26 +37,26 @@ public sealed class GenerateCommand : AsyncCommand<GenerateCommandSettings>
     )
     {
         using CancellationTokenSource cancellationTokenSource = new();
-        string contents = await File.ReadAllTextAsync(settings.File);
 
-        SerializationResult<IApiDocument>? serializationResult =
-            new OpenApiSerializer().Deserialize(settings.File, contents);
+        await using FileStream fileStream = new(settings.File, FileMode.Open, FileAccess.Read);
+        OpenApiDocument? serializationResult = new OpenApiStreamReader().Read(
+            fileStream,
+            out OpenApiDiagnostic? diagnostic
+        );
 
-        if (serializationResult.HasErrors)
+        if (diagnostic.Errors.Count > 0)
         {
-            foreach (
-                SerializationResultError serializationResultError in serializationResult.Errors
-            )
+            foreach (OpenApiError? serializationResultError in diagnostic.Errors)
             {
-                AnsiConsole.MarkupLine($"[red]Error: {serializationResultError.Message}[/]");
+                AnsiConsole.MarkupLine($"[red]Error:[/] {serializationResultError.Message}");
             }
 
             return -1;
         }
 
-        if (serializationResult.Result is null)
+        if (serializationResult is null)
         {
-            AnsiConsole.MarkupLine($"[red]Error: Serialized JSON returned empty API.[/]");
+            AnsiConsole.MarkupLine("[red]Error:[/] Serialized JSON returned empty API.");
 
             return -2;
         }
@@ -67,7 +67,7 @@ public sealed class GenerateCommand : AsyncCommand<GenerateCommandSettings>
             settings.Namespace,
             settings.ClassName,
             Accessibility.Public,
-            serializationResult.Result
+            serializationResult
         );
 
         ClientGenerator generator =
@@ -85,7 +85,7 @@ public sealed class GenerateCommand : AsyncCommand<GenerateCommandSettings>
         {
             foreach (GenerationResultError generatorResultError in generatorResult.Errors)
             {
-                AnsiConsole.MarkupLine($"[red]Error: {generatorResultError.Message}[/]");
+                AnsiConsole.MarkupLine($"[red]Error:[/] {generatorResultError.Message}");
             }
 
             return -3;
@@ -103,12 +103,12 @@ public sealed class GenerateCommand : AsyncCommand<GenerateCommandSettings>
         }
         catch (Exception e)
         {
-            AnsiConsole.MarkupLine($"[red]Error: {e.Message}[/]");
+            AnsiConsole.MarkupLine($"[red]Error:[/] {e.Message}");
 
             return -4;
         }
 
-        AnsiConsole.MarkupLine($"[green]Success: File was properly saved to {settings.Output}.[/]");
+        AnsiConsole.MarkupLine($"[green]Success:[/] File was properly saved to {settings.Output}.");
 
         return 0;
     }

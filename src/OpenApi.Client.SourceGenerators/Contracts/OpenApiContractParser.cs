@@ -4,9 +4,9 @@
 // All Rights Reserved.
 
 using Microsoft.CodeAnalysis;
+using Microsoft.OpenApi.Models;
 using OpenApi.Client.SourceGenerators.Converters;
 using OpenApi.Client.SourceGenerators.Generation;
-using OpenApi.Client.SourceGenerators.Schema;
 
 namespace OpenApi.Client.SourceGenerators.Contracts;
 
@@ -16,22 +16,22 @@ public static class OpenApiContractParser
         string namespaceName,
         string className,
         Accessibility access,
-        IApiDocument document
+        OpenApiDocument document
     )
     {
-        HashSet<OpenApiType> types = ConvertTypes(document.GetTypes());
+        HashSet<OpenApiType> types = ConvertTypes(document.Components.Schemas);
 
         return new OpenApiContract
         {
             Namespace = namespaceName,
             ClassName = className,
             Access = GetAccessName(access),
-            Title = document.GetTitle() ?? string.Empty,
-            Description = document.GetDescription() ?? string.Empty,
-            License = document.GetLicense() ?? string.Empty,
-            Version = document.GetVersion() ?? string.Empty,
+            Title = document.Info?.Title ?? string.Empty,
+            Description = document.Info?.Description ?? string.Empty,
+            License = document.Info?.License?.Name ?? string.Empty,
+            Version = document.Info?.Version ?? string.Empty,
             Types = types,
-            Paths = ConvertPaths(document.GetPaths(), types),
+            Paths = ConvertPaths(document.Paths, types),
         };
     }
 
@@ -48,7 +48,7 @@ public static class OpenApiContractParser
         };
     }
 
-    private static HashSet<OpenApiType> ConvertTypes(IEnumerable<ApiDocumentType> apiDocumentTypes)
+    private static HashSet<OpenApiType> ConvertTypes(IDictionary<string, OpenApiSchema> schemas)
     {
         HashSet<OpenApiType> types = new();
 
@@ -71,42 +71,45 @@ public static class OpenApiContractParser
     }
 
     private static HashSet<OpenApiPath> ConvertPaths(
-        IEnumerable<ApiDocumentPath> apiDocumentPaths,
+        OpenApiPaths openApiPaths,
         HashSet<OpenApiType> types
     )
     {
-        HashSet<OpenApiPath> paths = new();
+        HashSet<OpenApiPath> computedPaths = new();
 
-        foreach (ApiDocumentPath path in apiDocumentPaths)
+        foreach (KeyValuePair<string, OpenApiPathItem> path in openApiPaths)
         {
-            paths.Add(
-                new OpenApiPath
+            OpenApiPathItem pathItem = path.Value;
+
+            foreach (KeyValuePair<OperationType, OpenApiOperation> operation in pathItem.Operations)
+            {
+                computedPaths.Add(new OpenApiPath
                 {
-                    Path = path.Path,
-                    Name = ComputeMethodName(path.Method, path.OperationId),
-                    Summary = RemoveUnsafeWords(path.Summary),
-                    RequestBodyType = path.RequestBodyType, // TODO: Convert to OpenApiType, check whether exists
-                    RequestQueryType = path.RequestBodyType, // TODO: Convert to OpenApiType, check whether exists
-                    ResponseType = path.ResponseType, // TODO: Convert to OpenApiType, check whether exists
-                    PathElementsType = path.PathElementsType, // TODO: Convert to OpenApiType, check whether exists
-                    Method = path.Method switch
+                    Path = path.Key,
+                    Name = ComputeMethodName(operation.Key, operation.Value.OperationId),
+                    Summary = RemoveUnsafeWords(operation.Value?.Description),
+                    RequestBodyType = string.Empty, // TODO: Convert to OpenApiType, check whether exists
+                    RequestQueryType = string.Empty, // TODO: Convert to OpenApiType, check whether exists
+                    ResponseType = string.Empty, // TODO: Convert to OpenApiType, check whether exists
+                    PathElementsType = string.Empty, // TODO: Convert to OpenApiType, check whether exists
+                    Method = operation.Key switch
                     {
-                        ApiDocumentMethod.Put => OpenApiMethod.Put,
-                        ApiDocumentMethod.Post => OpenApiMethod.Post,
-                        ApiDocumentMethod.Delete => OpenApiMethod.Delete,
-                        ApiDocumentMethod.Options => OpenApiMethod.Options,
-                        ApiDocumentMethod.Head => OpenApiMethod.Head,
-                        ApiDocumentMethod.Patch => OpenApiMethod.Patch,
+                        OperationType.Put => OpenApiMethod.Put,
+                        OperationType.Post => OpenApiMethod.Post,
+                        OperationType.Delete => OpenApiMethod.Delete,
+                        OperationType.Options => OpenApiMethod.Options,
+                        OperationType.Head => OpenApiMethod.Head,
+                        OperationType.Patch => OpenApiMethod.Patch,
                         _ => OpenApiMethod.Get
                     }
-                }
-            );
+                });
+            }
         }
 
-        return paths;
+        return computedPaths;
     }
 
-    private static string ComputeMethodName(ApiDocumentMethod method, string operationId)
+    private static string ComputeMethodName(OperationType method, string operationId)
     {
         return /* ComputePrefix(method) + */
             PascalCaseConverter.Convert(RemoveUnsafeWords(operationId)) + "Async";
@@ -127,16 +130,16 @@ public static class OpenApiContractParser
         return input;
     }
 
-    private static string ComputePrefix(ApiDocumentMethod method)
+    private static string ComputePrefix(OperationType method)
     {
         return method switch
         {
-            ApiDocumentMethod.Put => "Put",
-            ApiDocumentMethod.Post => "Post",
-            ApiDocumentMethod.Delete => "Delete",
-            ApiDocumentMethod.Options => "Options",
-            ApiDocumentMethod.Head => "Head",
-            ApiDocumentMethod.Patch => "Patch",
+            OperationType.Put => "Put",
+            OperationType.Post => "Post",
+            OperationType.Delete => "Delete",
+            OperationType.Options => "Options",
+            OperationType.Head => "Head",
+            OperationType.Patch => "Patch",
             _ => "Get"
         };
     }

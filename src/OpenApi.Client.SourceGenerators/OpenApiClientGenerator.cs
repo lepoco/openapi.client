@@ -33,7 +33,7 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
                 (additionalText, cancellationToken) =>
                     (
                         Path.GetFileNameWithoutExtension(additionalText.Path).ToLower(),
-                        additionalText.GetText(cancellationToken)!.ToString()
+                        additionalText.GetText(cancellationToken)!.ToString() // stream
                     )
             )
             .Where(text => text.Item1 is not null && text.Item2 is not null)!
