@@ -87,6 +87,13 @@ https://github.com/OAI/OpenAPI-Specification
 The OpenAPI Client is inspired by the MVVM Community Toolkit:  
 https://github.com/CommunityToolkit/dotnet
 
+## Special thanks
+
+JetBrains was kind enough to lend a license for the open-source **dotUltimate** for Open API Client development. Learn more here:
+
+- https://www.jetbrains.com/dotnet/
+- https://www.jetbrains.com/opensource/
+
 ## Compilation
 
 Use Visual Studio 2022 and invoke the .sln.
