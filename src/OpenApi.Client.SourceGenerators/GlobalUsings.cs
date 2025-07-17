@@ -3,7 +3,6 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-global using Microsoft.CodeAnalysis;
 global using System;
 global using System.Buffers;
 global using System.Collections;
@@ -15,3 +14,4 @@ global using System.Runtime.CompilerServices;
 global using System.Text;
 global using System.Threading;
 global using System.Threading.Tasks;
+global using Microsoft.CodeAnalysis;

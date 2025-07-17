@@ -11,9 +11,9 @@ internal static class AssemblyVersionProvider
 {
     public static string GetInformationalVersion()
     {
-        AssemblyInformationalVersionAttribute? informationalVersionAttribute = typeof(AssemblyVersionProvider).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+        AssemblyInformationalVersionAttribute? informationalVersionAttribute =
+            typeof(AssemblyVersionProvider).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();
 
         return informationalVersionAttribute?.InformationalVersion ?? "1.0.0";
     }
 }
-

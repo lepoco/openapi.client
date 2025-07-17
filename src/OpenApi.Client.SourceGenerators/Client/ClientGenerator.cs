@@ -3,13 +3,14 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
+using System.Net.Http;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Reader;
 using OpenApi.Client.SourceGenerators.Converters;
+using OpenApi.Client.SourceGenerators.Readers;
 using OpenApi.Client.SourceGenerators.Reflection;
-using System.Net.Http;
 
 namespace OpenApi.Client.SourceGenerators.Client;
 
@@ -32,8 +33,7 @@ public sealed class ClientGenerator(GeneratorData metadata)
     /// <returns>The generated source code as a string.</returns>
     public async Task<GenerationResult> GenerateAsync(CancellationToken cancellationToken = default)
     {
-        ValidationRuleSet ruleSet = ValidationRuleSet.GetDefaultRuleSet();
-        OpenApiReaderSettings settings = new() { LeaveStreamOpen = false, RuleSet = ruleSet };
+        OpenApiReaderSettings settings = CreateReaderSettings();
         ReadResult result;
 
         if (metadata.Source is not null)
@@ -41,7 +41,7 @@ public sealed class ClientGenerator(GeneratorData metadata)
             result = await OpenApiModelFactory.LoadAsync(
                 input: metadata.Source,
                 format: null,
-                settings: new OpenApiReaderSettings { LeaveStreamOpen = false, RuleSet = ruleSet },
+                settings: settings,
                 cancellationToken: cancellationToken
             );
         }
@@ -62,13 +62,12 @@ public sealed class ClientGenerator(GeneratorData metadata)
             return new GenerationResult { GeneratedClient = null, Errors = [.. errors] };
         }
 
-        return CreateClientFromResult(result);
+        return CreateClientFromReadResult(result);
     }
 
     public GenerationResult Generate()
     {
-        ValidationRuleSet ruleSet = ValidationRuleSet.GetDefaultRuleSet();
-        OpenApiReaderSettings settings = new() { LeaveStreamOpen = false, RuleSet = ruleSet };
+        OpenApiReaderSettings settings = CreateReaderSettings();
         ReadResult result;
 
         if (metadata.Contents is not null)
@@ -88,10 +87,22 @@ public sealed class ClientGenerator(GeneratorData metadata)
             return new GenerationResult { GeneratedClient = null, Errors = [.. errors] };
         }
 
-        return CreateClientFromResult(result);
+        return CreateClientFromReadResult(result);
     }
 
-    private GenerationResult CreateClientFromResult(ReadResult result)
+    private static OpenApiReaderSettings CreateReaderSettings()
+    {
+        ValidationRuleSet ruleSet = ValidationRuleSet.GetDefaultRuleSet();
+
+        OpenApiReaderSettings settings = new() { LeaveStreamOpen = false, RuleSet = ruleSet };
+
+        settings.Readers.Remove(OpenApiConstants.Json);
+        settings.Readers.Add(OpenApiConstants.Json, new CustomOpenApiJsonReader());
+
+        return settings;
+    }
+
+    private GenerationResult CreateClientFromReadResult(ReadResult result)
     {
         if (result.Diagnostic?.Errors.Count > 0)
         {

@@ -32,6 +32,9 @@
     <None Update="OpenApis\openapi-2.0.0.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="OpenApis\openapi-3.0.0.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Update="OpenApis\openapi-3.0.3.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

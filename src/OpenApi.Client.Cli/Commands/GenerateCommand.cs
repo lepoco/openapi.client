@@ -51,45 +51,30 @@ public sealed class GenerateCommand : AsyncCommand<GenerateCommandSettings>
 
         GenerationResult generatorResult = await generator.GenerateAsync(cancellationTokenSource.Token);
 
-        //OpenApiContract contract = OpenApiContractParser.Parse(
-        //    settings.Namespace,
-        //    settings.ClassName,
-        //    Accessibility.Public,
-        //    serializationResult
-        //);
+        if (generatorResult.HasErrors)
+        {
+            foreach (GenerationError generatorResultError in generatorResult.Errors)
+            {
+                AnsiConsole.MarkupLine($"[red]Error:[/] {generatorResultError.Message}");
+            }
 
-        //ClientGenerator generator = new(
-        //    contract,
-        //    settings.Serializer switch
-        //    {
-        //        JsonSerializerType.NewtonsoftJson => ClientGeneratorSerializer.NewtonsoftJson,
-        //        _ => ClientGeneratorSerializer.SystemTextJson,
-        //    }
-        //);
-        //GenerationResult<string> generatorResult = generator.Generate();
+            return -3;
+        }
 
-        //if (generatorResult.HasErrors)
-        //{
-        //    foreach (GenerationResultError generatorResultError in generatorResult.Errors)
-        //    {
-        //        AnsiConsole.MarkupLine($"[red]Error:[/] {generatorResultError.Message}");
-        //    }
+        try
+        {
+            await File.WriteAllTextAsync(
+                settings.Output,
+                generatorResult.GeneratedClient,
+                cancellationTokenSource.Token
+            );
+        }
+        catch (Exception e)
+        {
+            AnsiConsole.MarkupLine($"[red]Error:[/] {e.Message}");
 
-        //    return -3;
-        //}
-
-        //generatedSource = generatorResult.Result;
-
-        //try
-        //{
-        //    await File.WriteAllTextAsync(settings.Output, generatedSource, cancellationTokenSource.Token);
-        //}
-        //catch (Exception e)
-        //{
-        //    AnsiConsole.MarkupLine($"[red]Error:[/] {e.Message}");
-
-        //    return -4;
-        //}
+            return -4;
+        }
 
         AnsiConsole.MarkupLine($"[green]Success:[/] File was properly saved to {settings.Output}.");
 
