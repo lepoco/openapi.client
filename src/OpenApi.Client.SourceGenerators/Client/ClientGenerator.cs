@@ -240,7 +240,7 @@ public sealed class ClientGenerator(GeneratorData metadata)
             ),
             SyntaxFactory.CarriageReturnLineFeed,
             SyntaxFactory.Comment(
-                "/// Uses an injected <see cref=\"global::System.Net.Http.HttpClient\"> to make HTTP requests."
+                "/// Uses an injected <see cref=\"global::System.Net.Http.HttpClient\" /> to make HTTP requests."
             ),
             SyntaxFactory.CarriageReturnLineFeed
         );
