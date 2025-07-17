@@ -1,5 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
+    <SourceGeneratorsProject>true</SourceGeneratorsProject>
     <TargetFramework>netstandard2.0</TargetFramework>
     <PackSymbols>false</PackSymbols>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
@@ -31,37 +32,24 @@
     <PackageReference Include="PolySharp" PrivateAssets="all" Pack="false" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference
-      Include="Microsoft.Bcl.AsyncInterfaces"
-      PrivateAssets="all"
-      GeneratePathProperty="true"
-    />
-    <PackageReference
-      Include="Microsoft.OpenApi.YamlReader"
-      PrivateAssets="all"
-      GeneratePathProperty="true"
-    />
+    <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" PrivateAssets="all" GeneratePathProperty="true" />
+    <PackageReference Include="Microsoft.OpenApi.YamlReader" PrivateAssets="all" GeneratePathProperty="true" />
     <PackageReference Include="Microsoft.OpenApi" PrivateAssets="all" GeneratePathProperty="true" />
     <PackageReference Include="SharpYaml" PrivateAssets="all" GeneratePathProperty="true" />
     <PackageReference Include="System.Buffers" PrivateAssets="all" GeneratePathProperty="true" />
     <PackageReference Include="System.IO.Pipelines" PrivateAssets="all" GeneratePathProperty="true" />
     <PackageReference Include="System.Memory" PrivateAssets="all" GeneratePathProperty="true" />
     <PackageReference Include="System.Numerics.Vectors" PrivateAssets="all" GeneratePathProperty="true" />
-    <PackageReference
-      Include="System.Runtime.CompilerServices.Unsafe"
-      PrivateAssets="all"
-      GeneratePathProperty="true"
-    />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" PrivateAssets="all" GeneratePathProperty="true" />
     <PackageReference Include="System.Text.Encodings.Web" PrivateAssets="all" GeneratePathProperty="true" />
     <PackageReference Include="System.Text.Json" PrivateAssets="all" GeneratePathProperty="true" />
-    <PackageReference
-      Include="System.Threading.Tasks.Extensions"
-      PrivateAssets="all"
-      GeneratePathProperty="true"
-    />
+    <PackageReference Include="System.Threading.Tasks.Extensions" PrivateAssets="all" GeneratePathProperty="true" />
   </ItemGroup>
   <ItemGroup>
     <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
     <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Reflection\" />
   </ItemGroup>
 </Project>

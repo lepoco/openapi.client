@@ -7,27 +7,7 @@
 // The .NET Foundation licenses this file to you under the MIT license.
 // See the LICENSE file in the project root for more information.
 
-using System.Runtime.CompilerServices;
-
 namespace OpenApi.Client.SourceGenerators.Collections;
-
-/// <summary>
-/// Extensions for <see cref="EquatableArray{T}"/>.
-/// </summary>
-internal static class EquatableArray
-{
-    /// <summary>
-    /// Creates an <see cref="EquatableArray{T}"/> instance from a given <see cref="ImmutableArray{T}"/>.
-    /// </summary>
-    /// <typeparam name="T">The type of items in the input array.</typeparam>
-    /// <param name="array">The input <see cref="ImmutableArray{T}"/> instance.</param>
-    /// <returns>An <see cref="EquatableArray{T}"/> instance from a given <see cref="ImmutableArray{T}"/>.</returns>
-    public static EquatableArray<T> AsEquatableArray<T>(this ImmutableArray<T> array)
-        where T : IEquatable<T>
-    {
-        return new(array);
-    }
-}
 
 /// <summary>
 /// An immutable, equatable array. This is equivalent to <see cref="ImmutableArray{T}"/> but with value equality support.

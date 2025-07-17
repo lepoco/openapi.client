@@ -5,6 +5,9 @@
 
 namespace OpenApi.Client.SourceGenerators.Client;
 
+/// <summary>
+/// Represents the result of generating an OpenAPI client from a document.
+/// </summary>
 public sealed record GenerationResult
 {
     /// <summary>

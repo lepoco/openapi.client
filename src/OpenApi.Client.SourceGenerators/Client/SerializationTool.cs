@@ -5,8 +5,18 @@
 
 namespace OpenApi.Client.SourceGenerators.Client;
 
+/// <summary>
+/// Specifies the serialization tool to be used for generating the OpenAPI client.
+/// </summary>
 public enum SerializationTool
 {
+    /// <summary>
+    /// Uses System.Text.Json for serialization.
+    /// </summary>
     SystemTextJson,
+
+    /// <summary>
+    /// Uses Newtonsoft.Json for serialization.
+    /// </summary>
     NewtonsoftJson,
 }

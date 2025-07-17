@@ -3,10 +3,7 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Text;
-using Microsoft.OpenApi;
-using Microsoft.OpenApi.Reader;
 using OpenApi.Client.SourceGenerators.Client;
 using OpenApi.Client.SourceGenerators.Diagnostics;
 
@@ -45,7 +42,7 @@ public sealed class OpenApiClientGenerator : IIncrementalGenerator
             .Where(text => text.Item1 is not null && text.Item2 is not null)!
             .Collect();
 
-        IncrementalValuesProvider<GeneratorData?> classInfos = context
+        IncrementalValuesProvider<SourceGeneratorMetadata?> classInfos = context
             .SyntaxProvider.ForAttributeWithMetadataName(
                 searchedAttribute,
                 predicate: static (s, _) => true,
@@ -56,7 +53,7 @@ public sealed class OpenApiClientGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(classInfos.Combine(additionalFiles), Execute);
     }
 
-    private static GeneratorData? ComputeClassForGeneration(
+    private static SourceGeneratorMetadata? ComputeClassForGeneration(
         GeneratorAttributeSyntaxContext syntaxContext,
         CancellationToken cancellationToken
     )
@@ -102,7 +99,7 @@ public sealed class OpenApiClientGenerator : IIncrementalGenerator
             }
         }
 
-        return new GeneratorData
+        return new SourceGeneratorMetadata
         {
             NamespaceName = namedSymbol.ContainingNamespace.ToString(),
             ClassName = namedSymbol.Name,
@@ -117,7 +114,7 @@ public sealed class OpenApiClientGenerator : IIncrementalGenerator
     private static void Execute(
         SourceProductionContext spc,
         (
-            GeneratorData? GeneratorData,
+            SourceGeneratorMetadata? GeneratorData,
             ImmutableArray<(string Name, string Contents)> Files
         ) compilationAndFiles
     )
@@ -169,44 +166,18 @@ public sealed class OpenApiClientGenerator : IIncrementalGenerator
             return;
         }
 
-        ReadResult readResult = OpenApiDocument.Load(
-            new MemoryStream(Encoding.UTF8.GetBytes(compilationAndFiles.GeneratorData.SelectedFile)),
-            format: null,
-            settings: null
+        ClientGenerator generator = new(
+            new GeneratorData
+            {
+                Contents = additionalFileContents,
+                Access = compilationAndFiles.GeneratorData.Access,
+                ClassName = compilationAndFiles.GeneratorData.ClassName,
+                NamespaceName = compilationAndFiles.GeneratorData.NamespaceName,
+                SerializationTool = compilationAndFiles.GeneratorData.SerializationTool,
+                Templates = compilationAndFiles.GeneratorData.Templates,
+            }
         );
 
-        if (readResult.Diagnostic?.Errors.Count > 0)
-        {
-            foreach (OpenApiError? error in readResult.Diagnostic.Errors)
-            {
-                spc.ReportDiagnostic(
-                    Diagnostic.Create(
-                        DiagnosticDescriptors.DocumentDeserializationFailed,
-                        compilationAndFiles.GeneratorData.Location ?? Location.None,
-                        compilationAndFiles.GeneratorData.SelectedFile,
-                        error.Message
-                    )
-                );
-            }
-
-            return;
-        }
-
-        if (readResult.Document is null)
-        {
-            spc.ReportDiagnostic(
-                Diagnostic.Create(
-                    DiagnosticDescriptors.GenerationFailed,
-                    compilationAndFiles.GeneratorData.Location ?? Location.None,
-                    compilationAndFiles.GeneratorData.SelectedFile,
-                    "Serializer returned empty contract."
-                )
-            );
-
-            return;
-        }
-
-        ClientGenerator generator = new(readResult.Document, compilationAndFiles.GeneratorData);
         GenerationResult generatorResult;
 
         try
@@ -261,5 +232,22 @@ public sealed class OpenApiClientGenerator : IIncrementalGenerator
             $"{compilationAndFiles.GeneratorData.ClassName}.g.cs",
             SourceText.From(generatorResult.GeneratedClient, Encoding.UTF8)
         );
+    }
+
+    private sealed record SourceGeneratorMetadata
+    {
+        public required string NamespaceName { get; init; }
+
+        public required string ClassName { get; init; }
+
+        public required string SelectedFile { get; init; }
+
+        public required Accessibility Access { get; init; }
+
+        public required SerializationTool SerializationTool { get; init; }
+
+        public required Location? Location { get; init; }
+
+        public required string? Templates { get; init; }
     }
 }

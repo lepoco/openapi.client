@@ -37,45 +37,19 @@ public sealed class GenerateCommand : AsyncCommand<GenerateCommandSettings>
 
         await using FileStream fileStream = new(settings.File, FileMode.Open, FileAccess.Read);
 
-        ReadResult readResult = await OpenApiDocument.LoadAsync(
-            fileStream,
-            format: null,
-            settings: null,
-            cancellationToken: cancellationTokenSource.Token
-        );
-
-        if (readResult.Diagnostic?.Errors.Count > 0)
-        {
-            foreach (OpenApiError? serializationResultError in readResult.Diagnostic.Errors)
-            {
-                AnsiConsole.MarkupLine($"[red]Error:[/] {serializationResultError.Message}");
-            }
-
-            return -1;
-        }
-
-        if (readResult.Document is null)
-        {
-            AnsiConsole.MarkupLine("[red]Error:[/] Serialized JSON returned empty API.");
-
-            return -2;
-        }
-
         ClientGenerator generator = new(
-            readResult.Document,
             new GeneratorData
             {
                 NamespaceName = settings.Namespace,
                 ClassName = settings.ClassName,
                 Access = Accessibility.Public,
                 SerializationTool = SerializationTool.SystemTextJson,
-                Location = Location.None,
-                SelectedFile = "",
+                Source = fileStream,
                 Templates = null,
             }
         );
 
-        GenerationResult generatorResult = generator.Generate();
+        GenerationResult generatorResult = await generator.GenerateAsync(cancellationTokenSource.Token);
 
         //OpenApiContract contract = OpenApiContractParser.Parse(
         //    settings.Namespace,

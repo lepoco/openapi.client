@@ -3,8 +3,6 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using Microsoft.CodeAnalysis;
-
 namespace OpenApi.Client.SourceGenerators.Diagnostics;
 
 /// <summary>
@@ -12,7 +10,7 @@ namespace OpenApi.Client.SourceGenerators.Diagnostics;
 /// </summary>
 internal static class DiagnosticDescriptors
 {
-    public static readonly DiagnosticDescriptor DocumentMissing = new DiagnosticDescriptor(
+    public static readonly DiagnosticDescriptor DocumentMissing = new(
         id: "OAPIC001",
         title: "Missing OpenAPI document",
         messageFormat: "Open API document with name \"{0}\" is missing",
@@ -23,7 +21,7 @@ internal static class DiagnosticDescriptors
         helpLinkUri: "https://github.com/lepoco/openapi.client/blob/main/documentation/OAPIC001.md"
     );
 
-    public static readonly DiagnosticDescriptor DocumentEmpty = new DiagnosticDescriptor(
+    public static readonly DiagnosticDescriptor DocumentEmpty = new(
         id: "OAPIC002",
         title: "Empty OpenAPI document",
         messageFormat: "Open API document with name \"{0}\" is empty",
@@ -34,7 +32,7 @@ internal static class DiagnosticDescriptors
         helpLinkUri: "https://github.com/lepoco/openapi.client/blob/main/documentation/OAPIC002.md"
     );
 
-    public static readonly DiagnosticDescriptor DocumentDeserializationFailed = new DiagnosticDescriptor(
+    public static readonly DiagnosticDescriptor DocumentDeserializationFailed = new(
         id: "OAPIC003",
         title: "Deserializing OpenAPI document failed",
         messageFormat: "Deserialization of document \"{0}\" failed with message: \"{1}\"",
@@ -45,7 +43,7 @@ internal static class DiagnosticDescriptors
         helpLinkUri: "https://github.com/lepoco/openapi.client/blob/main/documentation/OAPIC003.md"
     );
 
-    public static readonly DiagnosticDescriptor GenerationFailed = new DiagnosticDescriptor(
+    public static readonly DiagnosticDescriptor GenerationFailed = new(
         id: "OAPIC004",
         title: "Generating OpenAPI Client failed",
         messageFormat: "Generation of source code from document \"{0}\" failed with message: \"{1}\"",
@@ -56,7 +54,7 @@ internal static class DiagnosticDescriptors
         helpLinkUri: "https://github.com/lepoco/openapi.client/blob/main/documentation/OAPIC004.md"
     );
 
-    public static readonly DiagnosticDescriptor GeneratedSourceEmpty = new DiagnosticDescriptor(
+    public static readonly DiagnosticDescriptor GeneratedSourceEmpty = new(
         id: "OAPIC005",
         title: "Generating OpenAPI Client failed",
         messageFormat: "Generation of source code from document \"{0}\" failed",
@@ -67,7 +65,7 @@ internal static class DiagnosticDescriptors
         helpLinkUri: "https://github.com/lepoco/openapi.client/blob/main/documentation/OAPIC005.md"
     );
 
-    public static readonly DiagnosticDescriptor MissingPaths = new DiagnosticDescriptor(
+    public static readonly DiagnosticDescriptor MissingPaths = new(
         id: "OAPIC006",
         title: "No paths in OpenAPI document",
         messageFormat: "No paths to generate in the file \"{0}\" were found",

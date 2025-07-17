@@ -81,4 +81,5 @@
       <Compile Include="$(GeneratedSkipLocalsInitFile)" />
     </ItemGroup>
   </Target>
+
 </Project>

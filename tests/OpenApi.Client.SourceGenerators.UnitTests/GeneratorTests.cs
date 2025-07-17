@@ -15,32 +15,19 @@ public sealed class GeneratorTests
     {
         FileStream fileStream = File.OpenRead(file);
 
-        ValidationRuleSet ruleSet = ValidationRuleSet.GetDefaultRuleSet();
-
-        ReadResult readResult = await OpenApiModelFactory.LoadAsync(
-            input: fileStream,
-            format: null,
-            settings: new OpenApiReaderSettings { LeaveStreamOpen = false, RuleSet = ruleSet }
-        );
-
-        readResult.Document.Should().NotBeNull();
-        readResult.Diagnostic?.Errors.Should().BeEmpty();
-
         ClientGenerator generator = new(
-            readResult.Document,
             new GeneratorData
             {
+                Source = fileStream,
                 NamespaceName = "MyCompany.SimpleOverview",
                 ClassName = "SimpleOverviewClient",
                 Access = Accessibility.Public,
                 SerializationTool = SerializationTool.SystemTextJson,
-                Location = Location.None,
-                SelectedFile = "",
                 Templates = null,
             }
         );
 
-        GenerationResult generatorResult = generator.Generate();
+        GenerationResult generatorResult = await generator.GenerateAsync();
 
         generatorResult.GeneratedClient.Should().NotBeNullOrWhiteSpace();
     }
