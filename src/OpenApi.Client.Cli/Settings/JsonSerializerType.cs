@@ -23,5 +23,5 @@ public enum JsonSerializerType
     /// <summary>
     /// Represents the Newtonsoft.Json serializer.
     /// </summary>
-    NewtonsoftJson
+    NewtonsoftJson,
 }

@@ -11,20 +11,17 @@
 // more info in ThirdPartyNotices.txt in the root of the project.
 
 using Microsoft.CodeAnalysis;
-using OpenApi.Client.SourceGenerators.Helpers;
-using OpenApi.Client.SourceGenerators.Models;
+using OpenApi.Client.SourceGenerators.Collections;
+using OpenApi.Client.SourceGenerators.Diagnostics;
 
 namespace OpenApi.Client.SourceGenerators.Extensions;
 
-/// <summary>
-/// Extension methods for <see cref="GeneratorExecutionContext"/>, specifically for reporting diagnostics.
-/// </summary>
 internal static class DiagnosticsExtensions
 {
     /// <summary>
     /// Adds a new diagnostics to the target builder.
     /// </summary>
-    /// <param name="diagnostics">The collection of produced <see cref="DiagnosticInfo"/> instances.</param>
+    /// <param name="diagnostics">The collection of produced <see cref="Microsoft.CodeAnalysis.DiagnosticInfo"/> instances.</param>
     /// <param name="descriptor">The input <see cref="DiagnosticDescriptor"/> for the diagnostics to create.</param>
     /// <param name="symbol">The source <see cref="ISymbol"/> to attach the diagnostics to.</param>
     /// <param name="args">The optional arguments for the formatted message to include.</param>
@@ -41,7 +38,7 @@ internal static class DiagnosticsExtensions
     /// <summary>
     /// Adds a new diagnostics to the target builder.
     /// </summary>
-    /// <param name="diagnostics">The collection of produced <see cref="DiagnosticInfo"/> instances.</param>
+    /// <param name="diagnostics">The collection of produced <see cref="Microsoft.CodeAnalysis.DiagnosticInfo"/> instances.</param>
     /// <param name="descriptor">The input <see cref="DiagnosticDescriptor"/> for the diagnostics to create.</param>
     /// <param name="node">The source <see cref="SyntaxNode"/> to attach the diagnostics to.</param>
     /// <param name="args">The optional arguments for the formatted message to include.</param>

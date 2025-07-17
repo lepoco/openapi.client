@@ -11,6 +11,23 @@ public static class PascalCaseConverter
 {
     private static readonly Regex regex = new Regex(@"[^a-zA-Z0-9\s]", RegexOptions.Compiled);
 
+    /// <summary>
+    /// Converts a string to PascalCase.
+    /// </summary>
+    public static string ToPascalCase(this string value)
+    {
+        if (string.IsNullOrEmpty(value))
+        {
+            return string.Empty;
+        }
+
+        // Convert to PascalCase using the Convert method
+        return Convert(value);
+    }
+
+    /// <summary>
+    /// Converts a string to PascalCase by removing special characters and capitalizing the first letter of each word.
+    /// </summary>
     public static string Convert(string? value)
     {
         if (string.IsNullOrEmpty(value) || value!.Length == 0)

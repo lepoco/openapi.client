@@ -4,12 +4,8 @@
 // All Rights Reserved.
 
 using OpenApi.Client.Cli.Commands;
-using OpenApi.Client.Cli.DependencyInjection;
 
-IHostBuilder builder = Host.CreateDefaultBuilder(args);
-DependencyInjectionRegistrar registrar = new(builder);
-
-CommandApp app = new(registrar);
+CommandApp app = new();
 
 app.Configure(config =>
 {

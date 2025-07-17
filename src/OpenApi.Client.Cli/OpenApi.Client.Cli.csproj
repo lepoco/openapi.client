@@ -1,9 +1,8 @@
 <Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <AssemblyName>openapiclient</AssemblyName>
     <PackageId>OpenApiClient.Cli</PackageId>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net9.0</TargetFramework>
     <OutputType>exe</OutputType>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>openapiclient</ToolCommandName>
@@ -11,9 +10,6 @@
     <CommonTags>$(CommonTags);cli;command;tool</CommonTags>
     <Description>Your friendly neighborhood tool for generating C# client classes from Open API jsons!</Description>
   </PropertyGroup>
-
-  <Import Project="..\OpenApi.Client.SourceGenerators\OpenApi.Client.SourceGenerators.projitems" Label="Shared" />
-
   <ItemGroup>
     <PackageReference Include="SharpYaml" />
     <PackageReference Include="System.Buffers" />
@@ -22,11 +18,11 @@
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" />
     <PackageReference Include="System.Text.Encodings.Web" />
     <PackageReference Include="System.Text.Json" />
+    <PackageReference Include="System.IO.Pipelines" />
     <PackageReference Include="System.Threading.Tasks.Extensions" />
-    <PackageReference Include="Microsoft.Extensions.Hosting" />
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" />
     <PackageReference Include="Microsoft.OpenApi" />
-    <PackageReference Include="Microsoft.OpenApi.Readers" />
+    <PackageReference Include="Microsoft.OpenApi.YamlReader" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
     <PackageReference Include="Spectre.Console" />
     <PackageReference Include="Spectre.Console.Analyzer">
@@ -35,5 +31,7 @@
     </PackageReference>
     <PackageReference Include="Spectre.Console.Cli" />
   </ItemGroup>
-
+  <ItemGroup>
+    <ProjectReference Include="..\OpenApi.Client.SourceGenerators\OpenApi.Client.SourceGenerators.csproj" />
+  </ItemGroup>
 </Project>

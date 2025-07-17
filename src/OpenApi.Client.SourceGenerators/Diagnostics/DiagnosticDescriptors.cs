@@ -34,17 +34,16 @@ internal static class DiagnosticDescriptors
         helpLinkUri: "https://github.com/lepoco/openapi.client/blob/main/documentation/OAPIC002.md"
     );
 
-    public static readonly DiagnosticDescriptor DocumentDeserializationFailed =
-        new DiagnosticDescriptor(
-            id: "OAPIC003",
-            title: "Deserializing OpenAPI document failed",
-            messageFormat: "Deserialization of document \"{0}\" failed with message: \"{1}\"",
-            category: "OpenApi.Client.SourceGenerators.DocumentDeserializationFailed",
-            defaultSeverity: DiagnosticSeverity.Error,
-            isEnabledByDefault: true,
-            description: "The document was read successfully, but it failed to deserialize into an object.",
-            helpLinkUri: "https://github.com/lepoco/openapi.client/blob/main/documentation/OAPIC003.md"
-        );
+    public static readonly DiagnosticDescriptor DocumentDeserializationFailed = new DiagnosticDescriptor(
+        id: "OAPIC003",
+        title: "Deserializing OpenAPI document failed",
+        messageFormat: "Deserialization of document \"{0}\" failed with message: \"{1}\"",
+        category: "OpenApi.Client.SourceGenerators.DocumentDeserializationFailed",
+        defaultSeverity: DiagnosticSeverity.Error,
+        isEnabledByDefault: true,
+        description: "The document was read successfully, but it failed to deserialize into an object.",
+        helpLinkUri: "https://github.com/lepoco/openapi.client/blob/main/documentation/OAPIC003.md"
+    );
 
     public static readonly DiagnosticDescriptor GenerationFailed = new DiagnosticDescriptor(
         id: "OAPIC004",

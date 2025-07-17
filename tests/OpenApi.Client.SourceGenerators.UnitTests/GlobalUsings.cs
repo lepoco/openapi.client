@@ -3,14 +3,10 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-global using System;
-global using System.ComponentModel;
 global using System.IO;
-global using System.Text.RegularExpressions;
-global using System.Threading;
 global using System.Threading.Tasks;
+global using AwesomeAssertions;
 global using Microsoft.CodeAnalysis;
 global using Microsoft.OpenApi;
 global using Microsoft.OpenApi.Reader;
-global using Spectre.Console;
-global using Spectre.Console.Cli;
+global using Xunit;
