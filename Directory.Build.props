@@ -6,7 +6,7 @@
   <PropertyGroup>
     <Version>1.0.0</Version>
     <AssemblyVersion>$(Version)</AssemblyVersion>
-    <PackageVersion>$(Version)-preview.6</PackageVersion>
+    <PackageVersion>$(Version)-preview.7</PackageVersion>
   </PropertyGroup>
   <PropertyGroup>
     <Company>lepo.co</Company>

@@ -35,5 +35,6 @@ public sealed class GeneratorTests
         GenerationResult generatorResult = await generator.GenerateAsync();
 
         generatorResult.GeneratedClient.Should().NotBeNullOrWhiteSpace();
+        generatorResult.Errors.Should().BeEmpty();
     }
 }

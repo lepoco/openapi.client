@@ -3,6 +3,9 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT license.
+
 namespace OpenApi.Client.SourceGenerators;
 
 /// <summary>

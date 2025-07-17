@@ -8,7 +8,6 @@
 // See the LICENSE file in the project root for more information.
 
 using System.ComponentModel;
-using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 
 #pragma warning disable CS0809

@@ -9,7 +9,10 @@ namespace OpenApi.Client.SourceGenerators.Reflection;
 
 internal static class AssemblyVersionProvider
 {
-    public static string GetInformationalVersion()
+    /// <summary>
+    /// Gets the version of the generator assembly.
+    /// </summary>
+    public static string Get()
     {
         AssemblyInformationalVersionAttribute? informationalVersionAttribute =
             typeof(AssemblyVersionProvider).Assembly.GetCustomAttribute<AssemblyInformationalVersionAttribute>();

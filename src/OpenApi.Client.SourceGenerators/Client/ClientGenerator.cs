@@ -3,9 +3,6 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using System.Net.Http;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.OpenApi;
 using Microsoft.OpenApi.Reader;
 using OpenApi.Client.SourceGenerators.Converters;
@@ -23,9 +20,9 @@ public sealed class ClientGenerator(GeneratorData metadata)
 
     private OpenApiDocument document = null!;
 
-    private static readonly string GeneratorVersion = AssemblyVersionProvider.GetInformationalVersion();
+    private static readonly string GeneratorVersion = AssemblyVersionProvider.Get();
 
-    private const string GeneratorName = "OpenApiClient";
+    private const string GeneratorName = OpenApiClientGeneration.GeneratorName;
 
     /// <summary>
     /// Generates the client source code.
@@ -206,8 +203,7 @@ public sealed class ClientGenerator(GeneratorData metadata)
                             SyntaxFactory.ParseName("global::System.CodeDom.Compiler.GeneratedCode"),
                             SyntaxFactory.AttributeArgumentList(
                                 SyntaxFactory.SeparatedList(
-                                    new[]
-                                    {
+                                    [
                                         SyntaxFactory.AttributeArgument(
                                             SyntaxFactory.LiteralExpression(
                                                 SyntaxKind.StringLiteralExpression,
@@ -220,7 +216,7 @@ public sealed class ClientGenerator(GeneratorData metadata)
                                                 SyntaxFactory.Literal(GeneratorVersion)
                                             )
                                         ),
-                                    }
+                                    ]
                                 )
                             )
                         )
@@ -236,7 +232,6 @@ public sealed class ClientGenerator(GeneratorData metadata)
 
     private MemberDeclarationSyntax ComputeInterface()
     {
-        // Add a meaningful description to the interface, including information about its purpose and details from the OpenAPI document
         SyntaxTriviaList interfaceSummaryTrivia = SyntaxFactory.TriviaList(
             SyntaxFactory.Comment("/// <summary>"),
             SyntaxFactory.CarriageReturnLineFeed,
@@ -244,30 +239,36 @@ public sealed class ClientGenerator(GeneratorData metadata)
                 $"/// {metadata.ClassName} is an abstraction for a client to an API generated based on the OpenAPI specification."
             ),
             SyntaxFactory.CarriageReturnLineFeed,
-            SyntaxFactory.Comment("/// It uses an injected HttpClient to make HTTP requests."),
+            SyntaxFactory.Comment(
+                "/// Uses an injected <see cref=\"global::System.Net.Http.HttpClient\"> to make HTTP requests."
+            ),
             SyntaxFactory.CarriageReturnLineFeed
         );
 
-        if (!string.IsNullOrEmpty(document.Info.Summary))
+        if (!string.IsNullOrWhiteSpace(document.Info.Summary))
         {
             interfaceSummaryTrivia = interfaceSummaryTrivia.AddRange(
                 [
                     SyntaxFactory.Comment("/// <para>"),
                     SyntaxFactory.CarriageReturnLineFeed,
-                    SyntaxFactory.Comment($"/// {document.Info.Summary}"),
+                    SyntaxFactory.Comment(
+                        $"/// {document.Info.Summary!.Replace("\r\n", " ").Replace("\n", " ")}"
+                    ),
                     SyntaxFactory.CarriageReturnLineFeed,
                     SyntaxFactory.Comment("/// </para>"),
                 ]
             );
         }
 
-        if (!string.IsNullOrEmpty(document.Info.Description))
+        if (!string.IsNullOrWhiteSpace(document.Info.Description))
         {
             interfaceSummaryTrivia = interfaceSummaryTrivia.AddRange(
                 [
                     SyntaxFactory.Comment("/// <para>"),
                     SyntaxFactory.CarriageReturnLineFeed,
-                    SyntaxFactory.Comment($"/// {document.Info.Description}"),
+                    SyntaxFactory.Comment(
+                        $"/// {document.Info.Description!.Replace("\r\n", " ").Replace("\n", " ")}"
+                    ),
                     SyntaxFactory.CarriageReturnLineFeed,
                     SyntaxFactory.Comment("/// </para>"),
                 ]
@@ -290,8 +291,7 @@ public sealed class ClientGenerator(GeneratorData metadata)
                             SyntaxFactory.ParseName("global::System.CodeDom.Compiler.GeneratedCode"),
                             SyntaxFactory.AttributeArgumentList(
                                 SyntaxFactory.SeparatedList(
-                                    new[]
-                                    {
+                                    [
                                         SyntaxFactory.AttributeArgument(
                                             SyntaxFactory.LiteralExpression(
                                                 SyntaxKind.StringLiteralExpression,
@@ -303,8 +303,8 @@ public sealed class ClientGenerator(GeneratorData metadata)
                                                 SyntaxKind.StringLiteralExpression,
                                                 SyntaxFactory.Literal(GeneratorVersion)
                                             )
-                                        ),
-                                    }
+                                        )
+                                    ]
                                 )
                             )
                         )
@@ -373,6 +373,43 @@ public sealed class ClientGenerator(GeneratorData metadata)
     {
         IEnumerable<MemberDeclarationSyntax> classMembers = ComputeClassMembers();
 
+        classMembers = classMembers.Append(
+            SyntaxFactory
+                .ConstructorDeclaration(metadata.ClassName)
+                .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                .AddParameterListParameters(
+                    SyntaxFactory
+                        .Parameter(SyntaxFactory.Identifier("httpClient"))
+                        .WithType(SyntaxFactory.ParseTypeName("global::System.Net.Http.HttpClient"))
+                )
+                .WithBody(
+                    SyntaxFactory.Block(
+                        SyntaxFactory.ExpressionStatement(
+                            SyntaxFactory.AssignmentExpression(
+                                SyntaxKind.SimpleAssignmentExpression,
+                                SyntaxFactory.IdentifierName("_httpClient"),
+                                SyntaxFactory.IdentifierName("httpClient")
+                            )
+                        )
+                    )
+                )
+        );
+
+        classMembers = classMembers.Prepend(
+            SyntaxFactory
+                .FieldDeclaration(
+                    SyntaxFactory
+                        .VariableDeclaration(
+                            SyntaxFactory.ParseTypeName("global::System.Net.Http.HttpClient")
+                        )
+                        .AddVariables(SyntaxFactory.VariableDeclarator("_httpClient"))
+                )
+                .AddModifiers(
+                    SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
+                    SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword)
+                )
+        );
+
         // Add GeneratedCodeAttribute to the class
         return SyntaxFactory
             .ClassDeclaration(metadata.ClassName)
@@ -387,8 +424,7 @@ public sealed class ClientGenerator(GeneratorData metadata)
                             SyntaxFactory.ParseName("global::System.CodeDom.Compiler.GeneratedCode"),
                             SyntaxFactory.AttributeArgumentList(
                                 SyntaxFactory.SeparatedList(
-                                    new[]
-                                    {
+                                    [
                                         SyntaxFactory.AttributeArgument(
                                             SyntaxFactory.LiteralExpression(
                                                 SyntaxKind.StringLiteralExpression,
@@ -401,7 +437,7 @@ public sealed class ClientGenerator(GeneratorData metadata)
                                                 SyntaxFactory.Literal(GeneratorVersion)
                                             )
                                         ),
-                                    }
+                                    ]
                                 )
                             )
                         )
@@ -428,6 +464,50 @@ public sealed class ClientGenerator(GeneratorData metadata)
                 IdentifierNameSyntax taskType = SyntaxFactory.IdentifierName(
                     "global::System.Threading.Tasks.Task"
                 );
+
+                FieldDeclarationSyntax httpClientField = SyntaxFactory
+                    .FieldDeclaration(
+                        SyntaxFactory
+                            .VariableDeclaration(
+                                SyntaxFactory.ParseTypeName("global::System.Net.Http.HttpClient")
+                            )
+                            .AddVariables(SyntaxFactory.VariableDeclarator("_httpClient"))
+                    )
+                    .AddModifiers(
+                        SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
+                        SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword)
+                    );
+
+                PropertyDeclarationSyntax httpClientProperty = SyntaxFactory
+                    .PropertyDeclaration(
+                        SyntaxFactory.ParseTypeName("global::System.Net.Http.HttpClient"),
+                        "HttpClient"
+                    )
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .WithExpressionBody(
+                        SyntaxFactory.ArrowExpressionClause(SyntaxFactory.IdentifierName("_httpClient"))
+                    )
+                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
+
+                ConstructorDeclarationSyntax constructor = SyntaxFactory
+                    .ConstructorDeclaration(metadata.ClassName)
+                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
+                    .AddParameterListParameters(
+                        SyntaxFactory
+                            .Parameter(SyntaxFactory.Identifier("httpClient"))
+                            .WithType(SyntaxFactory.ParseTypeName("global::System.Net.Http.HttpClient"))
+                    )
+                    .WithBody(
+                        SyntaxFactory.Block(
+                            SyntaxFactory.ExpressionStatement(
+                                SyntaxFactory.AssignmentExpression(
+                                    SyntaxKind.SimpleAssignmentExpression,
+                                    SyntaxFactory.IdentifierName("_httpClient"),
+                                    SyntaxFactory.IdentifierName("httpClient")
+                                )
+                            )
+                        )
+                    );
 
                 yield return SyntaxFactory
                     .MethodDeclaration(
@@ -468,20 +548,20 @@ public sealed class ClientGenerator(GeneratorData metadata)
     {
         StringBuilder nameBuilder = new();
 
-        nameBuilder.Append(
-            httpMethod.Method switch
-            {
-                "GET" => nameof(HttpMethod.Get),
-                "POST" => nameof(HttpMethod.Post),
-                "DELETE" => nameof(HttpMethod.Delete),
-                "PUT" => nameof(HttpMethod.Put),
-                "HEAD" => nameof(HttpMethod.Head),
-                "OPTIONS" => nameof(HttpMethod.Options),
-                "TRACE" => nameof(HttpMethod.Trace),
-                "PATCH" => "Patch",
-                _ => httpMethod.Method.ToPascalCase(),
-            }
-        );
+        // nameBuilder.Append(
+        //    httpMethod.Method switch
+        //    {
+        //        "GET" => nameof(HttpMethod.Get),
+        //        "POST" => nameof(HttpMethod.Post),
+        //        "DELETE" => nameof(HttpMethod.Delete),
+        //        "PUT" => nameof(HttpMethod.Put),
+        //        "HEAD" => nameof(HttpMethod.Head),
+        //        "OPTIONS" => nameof(HttpMethod.Options),
+        //        "TRACE" => nameof(HttpMethod.Trace),
+        //        "PATCH" => "Patch",
+        //        _ => httpMethod.Method.ToPascalCase(),
+        //    }
+        // );
 
         return nameBuilder.Append(operation.OperationId?.ToPascalCase()).ToString();
     }

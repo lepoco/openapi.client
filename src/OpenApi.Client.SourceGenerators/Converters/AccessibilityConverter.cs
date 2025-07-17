@@ -3,8 +3,6 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using Microsoft.CodeAnalysis.CSharp;
-
 namespace OpenApi.Client.SourceGenerators.Converters;
 
 internal static class AccessibilityConverter
