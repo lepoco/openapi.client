@@ -3,7 +3,9 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.Text;
+using OpenApi.Client.SourceGenerators.Client;
+using OpenApi.Client.SourceGenerators.Diagnostics;
 
 namespace OpenApi.Client.SourceGenerators;
 
@@ -11,18 +13,19 @@ namespace OpenApi.Client.SourceGenerators;
 /// Generator for Open API Clients.
 /// </summary>
 [Generator]
-public partial class OpenApiClientGenerator : IIncrementalGenerator
+public sealed class OpenApiClientGenerator : IIncrementalGenerator
 {
-    private const string MarkerAttributeName = "OpenApiClientAttribute";
-
     /// <inheritdoc />
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        const string searchedAttribute = $"OpenApi.Client.{MarkerAttributeName}";
+        const string searchedAttribute = $"OpenApi.Client.{OpenApiClientGeneration.MarkerAttributeName}";
 
         context.RegisterPostInitializationOutput(i =>
         {
-            i.AddSource($"{MarkerAttributeName}.g.cs", OpenApiClientGenerationHelper.Attribute);
+            i.AddSource(
+                $"{OpenApiClientGeneration.MarkerAttributeName}.g.cs",
+                OpenApiClientGeneration.MarkerAttributeSource
+            );
         });
 
         IncrementalValueProvider<ImmutableArray<(string, string)>> additionalFiles = context
@@ -33,13 +36,13 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
                 (additionalText, cancellationToken) =>
                     (
                         Path.GetFileNameWithoutExtension(additionalText.Path).ToLower(),
-                        additionalText.GetText(cancellationToken)!.ToString()
+                        additionalText.GetText(cancellationToken)!.ToString() // stream
                     )
             )
             .Where(text => text.Item1 is not null && text.Item2 is not null)!
             .Collect();
 
-        IncrementalValuesProvider<RequestedClassToGenerate?> classInfos = context
+        IncrementalValuesProvider<SourceGeneratorMetadata?> classInfos = context
             .SyntaxProvider.ForAttributeWithMetadataName(
                 searchedAttribute,
                 predicate: static (s, _) => true,
@@ -50,7 +53,7 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(classInfos.Combine(additionalFiles), Execute);
     }
 
-    private static RequestedClassToGenerate? ComputeClassForGeneration(
+    private static SourceGeneratorMetadata? ComputeClassForGeneration(
         GeneratorAttributeSyntaxContext syntaxContext,
         CancellationToken cancellationToken
     )
@@ -65,12 +68,12 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
 
         string specification = string.Empty;
         Location? location = null;
-        RequestedSerializationTool serializationTool = RequestedSerializationTool.SystemTextJson;
+        SerializationTool serializationTool = SerializationTool.SystemTextJson;
         ImmutableArray<AttributeData> attributes = namedSymbol.GetAttributes();
 
         foreach (AttributeData attribute in attributes)
         {
-            if (attribute.AttributeClass?.Name != MarkerAttributeName)
+            if (attribute.AttributeClass?.Name != OpenApiClientGeneration.MarkerAttributeName)
             {
                 continue;
             }
@@ -91,29 +94,151 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
 
                 if (((int?)useDependencyInjectionArgument.Value ?? 0) == 1)
                 {
-                    serializationTool = RequestedSerializationTool.NewtonsoftJson;
+                    serializationTool = SerializationTool.NewtonsoftJson;
                 }
             }
         }
 
-        return new RequestedClassToGenerate
+        return new SourceGeneratorMetadata
         {
             NamespaceName = namedSymbol.ContainingNamespace.ToString(),
             ClassName = namedSymbol.Name,
             SelectedFile = specification.ToLower(),
             SerializationTool = serializationTool,
             Access = namedSymbol.DeclaredAccessibility,
-            Location = location
+            Location = location,
+            Templates = null,
         };
     }
 
-    private enum RequestedSerializationTool
+    private static void Execute(
+        SourceProductionContext spc,
+        (
+            SourceGeneratorMetadata? GeneratorData,
+            ImmutableArray<(string Name, string Contents)> Files
+        ) compilationAndFiles
+    )
     {
-        SystemTextJson,
-        NewtonsoftJson
+        if (compilationAndFiles.GeneratorData is null)
+        {
+            return;
+        }
+
+        string? additionalFileContents = null;
+
+        foreach ((string Name, string Contents) file in compilationAndFiles.Files)
+        {
+            if (
+                compilationAndFiles.GeneratorData.SelectedFile.Equals(
+                    file.Name,
+                    StringComparison.OrdinalIgnoreCase
+                )
+                || compilationAndFiles.GeneratorData.SelectedFile.Equals(
+                    $"{file.Name}.json",
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
+            {
+                additionalFileContents = file.Contents;
+                break;
+            }
+        }
+
+        if (additionalFileContents is null)
+        {
+            spc.ReportDiagnostic(
+                Diagnostic.Create(
+                    DiagnosticDescriptors.DocumentMissing,
+                    compilationAndFiles.GeneratorData.Location ?? Location.None,
+                    compilationAndFiles.GeneratorData.SelectedFile
+                )
+            );
+
+            return;
+        }
+
+        if (additionalFileContents.Length == 0)
+        {
+            spc.ReportDiagnostic(
+                Diagnostic.Create(
+                    DiagnosticDescriptors.DocumentEmpty,
+                    compilationAndFiles.GeneratorData.Location ?? Location.None,
+                    compilationAndFiles.GeneratorData.SelectedFile
+                )
+            );
+
+            return;
+        }
+
+        ClientGenerator generator = new(
+            new GeneratorData
+            {
+                Contents = additionalFileContents,
+                Access = compilationAndFiles.GeneratorData.Access,
+                ClassName = compilationAndFiles.GeneratorData.ClassName,
+                NamespaceName = compilationAndFiles.GeneratorData.NamespaceName,
+                SerializationTool = compilationAndFiles.GeneratorData.SerializationTool,
+                Templates = compilationAndFiles.GeneratorData.Templates,
+            }
+        );
+
+        GenerationResult generatorResult;
+
+        try
+        {
+            generatorResult = generator.Generate();
+
+            if (generatorResult.HasErrors)
+            {
+                foreach (GenerationError? error in generatorResult.Errors)
+                {
+                    spc.ReportDiagnostic(
+                        Diagnostic.Create(
+                            DiagnosticDescriptors.GenerationFailed,
+                            compilationAndFiles.GeneratorData.Location ?? Location.None,
+                            compilationAndFiles.GeneratorData.SelectedFile,
+                            error.Message
+                        )
+                    );
+                }
+
+                return;
+            }
+        }
+        catch (Exception e)
+        {
+            spc.ReportDiagnostic(
+                Diagnostic.Create(
+                    DiagnosticDescriptors.GenerationFailed,
+                    compilationAndFiles.GeneratorData.Location ?? Location.None,
+                    compilationAndFiles.GeneratorData.SelectedFile,
+                    e.Message
+                )
+            );
+
+            return;
+        }
+
+        if (generatorResult.GeneratedClient is null)
+        {
+            spc.ReportDiagnostic(
+                Diagnostic.Create(
+                    DiagnosticDescriptors.GeneratedSourceEmpty,
+                    compilationAndFiles.GeneratorData.Location ?? Location.None,
+                    compilationAndFiles.GeneratorData.SelectedFile
+                )
+            );
+
+            return;
+        }
+
+        spc.AddSource(
+            $"{compilationAndFiles.GeneratorData.ClassName}.g.cs",
+            SourceText.From(generatorResult.GeneratedClient, Encoding.UTF8)
+        );
     }
 
-    private sealed class RequestedClassToGenerate
+    private sealed record SourceGeneratorMetadata
     {
         public required string NamespaceName { get; init; }
 
@@ -123,8 +248,16 @@ public partial class OpenApiClientGenerator : IIncrementalGenerator
 
         public required Accessibility Access { get; init; }
 
-        public required RequestedSerializationTool SerializationTool { get; init; }
+        public required SerializationTool SerializationTool { get; init; }
 
         public required Location? Location { get; init; }
+
+        public required string? Templates { get; init; }
+
+        public string[] Operations { get; init; } = [];
+
+        public bool UseRecords { get; init; } = true;
+
+        public bool Nullable { get; init; } = true;
     }
 }

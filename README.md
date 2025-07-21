@@ -1,6 +1,6 @@
 # ☄️ OpenAPI Client
 
-[Created with ❤ in Poland by lepo.co](https://dev.lepo.co/)  
+[Created with ❤ in Poland by lepo.co](https://lepo.co/) and [wonderful open-source community](https://github.com/lepoco/openapi.client/graphs/contributors)  
 OpenAPI Client is a toolkit that helps you create HTTP clients for external APIs based on their OpenAPI specifications. It simplifies the process of consuming and interacting with various web services. The project is developed and maintained by lepo.co and other community contributors.
 
 ## 👀 What does this repo contain?
@@ -10,7 +10,7 @@ The repository contains NuGet package source code, which uses C# code generators
 ## Gettings started
 
 OpenApiClient is available as NuGet package on NuGet.org:  
-https://www.nuget.org/packages/OpenApiClient
+<https://www.nuget.org/packages/OpenApiClient>
 
 You can add it to your project using .NET CLI:
 
@@ -30,7 +30,7 @@ NuGet\Install-Package OpenApiClient
 dotnet tool install --global OpenApiClient.Cli
 ```
 
-Define an Open API file as content in your  **.csproj** file.
+Define an Open API file as content in your **.csproj** file.
 
 ```xml
 <Project Sdk="Microsoft.NET.Sdk">
@@ -80,12 +80,12 @@ We found the use of nullable essential, so C# 8.0 is required.
 ## OpenAPI
 
 OpenAPI specification is available at:  
-https://github.com/OAI/OpenAPI-Specification
+<https://github.com/OAI/OpenAPI-Specification>
 
 ## Community Toolkit
 
 The OpenAPI Client is inspired by the MVVM Community Toolkit:  
-https://github.com/CommunityToolkit/dotnet
+<https://github.com/CommunityToolkit/dotnet>
 
 ## Special thanks
 

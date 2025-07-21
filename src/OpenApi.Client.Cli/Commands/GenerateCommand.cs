@@ -3,12 +3,8 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using Microsoft.CodeAnalysis;
 using OpenApi.Client.Cli.Settings;
-using OpenApi.Client.SourceGenerators.Contracts;
-using OpenApi.Client.SourceGenerators.Generation;
-using OpenApi.Client.SourceGenerators.Schema;
-using OpenApi.Client.SourceGenerators.Serialization;
+using OpenApi.Client.SourceGenerators.Client;
 
 namespace OpenApi.Client.Cli.Commands;
 
@@ -24,100 +20,69 @@ public sealed class GenerateCommand : AsyncCommand<GenerateCommandSettings>
 {
     private static readonly Regex PathNormalizer = new(@"(\\\\|//)", RegexOptions.Compiled);
 
-    private static readonly Regex NamespaceValidator =
-        new(@"^[_a-zA-Z][_a-zA-Z0-9]*(\.[_a-zA-Z][_a-zA-Z0-9]*)*$", RegexOptions.Compiled);
+    private static readonly Regex NamespaceValidator = new(
+        @"^[_a-zA-Z][_a-zA-Z0-9]*(\.[_a-zA-Z][_a-zA-Z0-9]*)*$",
+        RegexOptions.Compiled
+    );
 
-    private static readonly Regex ClassNameValidator =
-        new(@"^[_a-zA-Z][_a-zA-Z0-9]*$", RegexOptions.Compiled);
+    private static readonly Regex ClassNameValidator = new(
+        @"^[_a-zA-Z][_a-zA-Z0-9]*$",
+        RegexOptions.Compiled
+    );
 
     /// <inheritdoc />
-    public override async Task<int> ExecuteAsync(
-        CommandContext context,
-        GenerateCommandSettings settings
-    )
+    public override async Task<int> ExecuteAsync(CommandContext context, GenerateCommandSettings settings)
     {
         using CancellationTokenSource cancellationTokenSource = new();
-        string contents = await File.ReadAllTextAsync(settings.File);
 
-        SerializationResult<IApiDocument>? serializationResult =
-            new OpenApiSerializer().Deserialize(settings.File, contents);
+        await using FileStream fileStream = new(settings.File, FileMode.Open, FileAccess.Read);
 
-        if (serializationResult.HasErrors)
-        {
-            foreach (
-                SerializationResultError serializationResultError in serializationResult.Errors
-            )
+        ClientGenerator generator = new(
+            new GeneratorData
             {
-                AnsiConsole.MarkupLine($"[red]Error: {serializationResultError.Message}[/]");
+                NamespaceName = settings.Namespace,
+                ClassName = settings.ClassName,
+                Access = Accessibility.Public,
+                SerializationTool = SerializationTool.SystemTextJson,
+                Source = fileStream,
+                Templates = null,
             }
-
-            return -1;
-        }
-
-        if (serializationResult.Result is null)
-        {
-            AnsiConsole.MarkupLine($"[red]Error: Serialized JSON returned empty API.[/]");
-
-            return -2;
-        }
-
-        string? generatedSource = null;
-
-        OpenApiContract contract = OpenApiContractParser.Parse(
-            settings.Namespace,
-            settings.ClassName,
-            Accessibility.Public,
-            serializationResult.Result
         );
 
-        ClientGenerator generator =
-            new(
-                contract,
-                settings.Serializer switch
-                {
-                    JsonSerializerType.NewtonsoftJson => ClientGeneratorSerializer.NewtonsoftJson,
-                    _ => ClientGeneratorSerializer.SystemTextJson
-                }
-            );
-        GenerationResult<string> generatorResult = generator.Generate();
+        GenerationResult generatorResult = await generator.GenerateAsync(cancellationTokenSource.Token);
 
         if (generatorResult.HasErrors)
         {
-            foreach (GenerationResultError generatorResultError in generatorResult.Errors)
+            foreach (GenerationError generatorResultError in generatorResult.Errors)
             {
-                AnsiConsole.MarkupLine($"[red]Error: {generatorResultError.Message}[/]");
+                AnsiConsole.MarkupLine($"[red]Error:[/] {generatorResultError.Message}");
             }
 
             return -3;
         }
 
-        generatedSource = generatorResult.Result;
-
         try
         {
             await File.WriteAllTextAsync(
                 settings.Output,
-                generatedSource,
+                generatorResult.GeneratedClient,
                 cancellationTokenSource.Token
             );
         }
         catch (Exception e)
         {
-            AnsiConsole.MarkupLine($"[red]Error: {e.Message}[/]");
+            AnsiConsole.MarkupLine($"[red]Error:[/] {e.Message}");
 
             return -4;
         }
 
-        AnsiConsole.MarkupLine($"[green]Success: File was properly saved to {settings.Output}.[/]");
+        AnsiConsole.MarkupLine($"[green]Success:[/] File was properly saved to {settings.Output}.");
 
         return 0;
     }
 
     /// <inheritdoc />
-    public override ValidationResult Validate(
-        CommandContext context,
-        GenerateCommandSettings settings
-    )
+    public override ValidationResult Validate(CommandContext context, GenerateCommandSettings settings)
     {
         if (string.IsNullOrEmpty(settings.ClassName))
         {
@@ -128,18 +93,14 @@ public sealed class GenerateCommand : AsyncCommand<GenerateCommandSettings>
 
         if (!ClassNameValidator.IsMatch(settings.ClassName))
         {
-            return ValidationResult.Error(
-                $"The name '{settings.ClassName}' is not valid C# type name."
-            );
+            return ValidationResult.Error($"The name '{settings.ClassName}' is not valid C# type name.");
         }
 
         settings.Namespace = settings.Namespace.Trim();
 
         if (!NamespaceValidator.IsMatch(settings.Namespace))
         {
-            return ValidationResult.Error(
-                $"The namespace '{settings.Namespace}' is not valid C# namespace."
-            );
+            return ValidationResult.Error($"The namespace '{settings.Namespace}' is not valid C# namespace.");
         }
 
         settings.File = PathNormalizer.Replace(settings.File, "/");

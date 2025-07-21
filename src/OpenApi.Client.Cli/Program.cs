@@ -4,12 +4,8 @@
 // All Rights Reserved.
 
 using OpenApi.Client.Cli.Commands;
-using OpenApi.Client.Cli.DependencyInjection;
 
-IHostBuilder builder = Host.CreateDefaultBuilder(args);
-DependencyInjectionRegistrar registrar = new(builder);
-
-CommandApp app = new(registrar);
+CommandApp app = new();
 
 app.Configure(config =>
 {
@@ -24,3 +20,11 @@ app.Configure(config =>
 });
 
 await app.RunAsync(args);
+
+return;
+
+// Public partial declaration of a class for integration tests
+namespace OpenApi.Client.Cli
+{
+    public partial class Program;
+}
