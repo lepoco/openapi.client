@@ -67,6 +67,11 @@ public sealed class OpenApiClientGenerator : IIncrementalGenerator
         }
 
         string specification = string.Empty;
+        bool nullable = true;
+        bool useRecords = true;
+        string? templates = null;
+        string[] operations = [];
+
         Location? location = null;
         SerializationTool serializationTool = SerializationTool.SystemTextJson;
         ImmutableArray<AttributeData> attributes = namedSymbol.GetAttributes();
@@ -76,6 +81,33 @@ public sealed class OpenApiClientGenerator : IIncrementalGenerator
             if (attribute.AttributeClass?.Name != OpenApiClientGeneration.MarkerAttributeName)
             {
                 continue;
+            }
+
+            foreach (KeyValuePair<string, TypedConstant> namedArgument in attribute.NamedArguments)
+            {
+                if (namedArgument.Key == "Templates")
+                {
+                    templates = namedArgument.Value.Value as string;
+                }
+
+                if (namedArgument.Key == "Nullable")
+                {
+                    nullable = namedArgument.Value.Value is not bool boolValue || boolValue;
+                }
+
+                if (namedArgument.Key == "UseRecords")
+                {
+                    nullable = namedArgument.Value.Value is not bool boolValue || boolValue;
+                }
+
+                if (namedArgument.Key == "SerializationTool")
+                {
+                    serializationTool = (namedArgument.Value.Value is int intValue ? intValue : 0) switch
+                    {
+                        1 => SerializationTool.NewtonsoftJson,
+                        _ => SerializationTool.SystemTextJson,
+                    };
+                }
             }
 
             location = attribute.ApplicationSyntaxReference?.SyntaxTree.GetLocation(
@@ -92,10 +124,14 @@ public sealed class OpenApiClientGenerator : IIncrementalGenerator
             {
                 TypedConstant useDependencyInjectionArgument = attribute.ConstructorArguments[1];
 
-                if (((int?)useDependencyInjectionArgument.Value ?? 0) == 1)
-                {
-                    serializationTool = SerializationTool.NewtonsoftJson;
-                }
+                operations = (
+                    useDependencyInjectionArgument.Kind == TypedConstantKind.Array
+                        ? useDependencyInjectionArgument
+                            .Values.Select(v => v.Value as string)
+                            .Where(s => s != null)
+                            .ToArray()
+                        : []
+                )!;
             }
         }
 
@@ -107,7 +143,10 @@ public sealed class OpenApiClientGenerator : IIncrementalGenerator
             SerializationTool = serializationTool,
             Access = namedSymbol.DeclaredAccessibility,
             Location = location,
-            Templates = null,
+            Templates = templates,
+            Nullable = nullable,
+            UseRecords = useRecords,
+            Operations = operations,
         };
     }
 
@@ -179,6 +218,8 @@ public sealed class OpenApiClientGenerator : IIncrementalGenerator
                 NamespaceName = compilationAndFiles.GeneratorData.NamespaceName,
                 SerializationTool = compilationAndFiles.GeneratorData.SerializationTool,
                 Templates = compilationAndFiles.GeneratorData.Templates,
+                Operations = compilationAndFiles.GeneratorData.Operations,
+                Nullable = compilationAndFiles.GeneratorData.Nullable,
             }
         );
 

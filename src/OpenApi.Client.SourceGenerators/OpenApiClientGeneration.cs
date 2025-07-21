@@ -55,48 +55,25 @@ internal sealed class OpenApiClientGeneration
                 {
                     /// <summary>Initializes a new instance of the <see cref="{{{MarkerAttributeName}}}"/> class.</summary>
                     /// <param name="specification">The specification resource name for the Open API Client.</param>
+                    /// <param name="operations">The list of operations to include in the Open API Client.</param>
                     /// <remarks>The specification is the name of the resource which is a yaml or json open api code.</remarks>
-                    public {{{MarkerAttributeName}}}(string specification)
+                    public {{{MarkerAttributeName}}}(string specification, params string[] operations)
                     {
                         Specification = specification;
-                        Serialization = OpenApiClientSerialization.SystemTextJson;
-                        Templates = null;
-                    }
-
-                    /// <summary>Initializes a new instance of the <see cref="{{{MarkerAttributeName}}}"/> class.</summary>
-                    /// <param name="specification">The specification resource name for the Open API Client.</param>
-                    /// <param name="serializationTool">A flag indicating whether to use the Service Collection for the Open API Client.</param>
-                    /// <remarks>The specification is the name of the resource which is a yaml or json open api code.</remarks>
-                    public {{{MarkerAttributeName}}}(string specification, OpenApiClientSerialization serializationTool)
-                    {
-                        Specification = specification;
-                        Serialization = serializationTool;
-                        Templates = null;
-                    }
-
-                    /// <summary>Initializes a new instance of the <see cref="{{{MarkerAttributeName}}}"/> class.</summary>
-                    /// <param name="specification">The specification resource name for the Open API Client.</param>
-                    /// <param name="serializationTool">A flag indicating whether to use the Service Collection for the Open API Client.</param>
-                    /// <param name="templates">Directory relative to <c>specification</c> file in which the templates are located.</param>
-                    /// <remarks>The specification is the name of the resource which is a yaml or json open api code.</remarks>
-                    public {{{MarkerAttributeName}}}(string specification, OpenApiClientSerialization serializationTool, string templates)
-                    {
-                        Specification = specification;
-                        Serialization = serializationTool;
-                        Templates = templates;
+                        Operations = operations;
                     }
 
                     /// <summary>The specification URL for the Open API Client.</summary>
                     public string Specification { get; }
 
                     /// <summary>A flag indicating whether to use the Service Collection for the Open API Client.</summary>
-                    public OpenApiClientSerialization Serialization { get; }
+                    public OpenApiClientSerialization Serialization { get; set; } = OpenApiClientSerialization.SystemTextJson;
 
                     /// <summary>Directory relative to <c>specification</c> file in which the templates are located.</summary>
                     public string? Templates { get; set; }
 
                     /// <summary>List of operations to include in the Open API Client.</summary>
-                    public string? Operations { get; set; }
+                    public string[] Operations { get; }
 
                     /// <summary>Whether the generated classes should use records.</summary>
                     public bool UseRecords { get; set; } = true;
