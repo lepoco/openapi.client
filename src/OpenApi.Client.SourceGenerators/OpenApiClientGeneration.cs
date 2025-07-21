@@ -28,7 +28,7 @@ internal sealed class OpenApiClientGeneration
     /// <summary>
     /// The name of the marker attribute used to indicate that a class should have an Open API Client generated for it.
     /// </summary>
-    public const string MarkerAttributeName = "OpenApiClientAttribute";
+    public const string MarkerAttributeName = $"{GeneratorName}Attribute";
 
     /// <summary>
     /// The source code for the marker attribute that indicates a class should have an Open API Client generated for it.
@@ -93,7 +93,16 @@ internal sealed class OpenApiClientGeneration
                     public OpenApiClientSerialization Serialization { get; }
 
                     /// <summary>Directory relative to <c>specification</c> file in which the templates are located.</summary>
-                    public string? Templates { get; }
+                    public string? Templates { get; set; }
+
+                    /// <summary>List of operations to include in the Open API Client.</summary>
+                    public string? Operations { get; set; }
+
+                    /// <summary>Whether the generated classes should use records.</summary>
+                    public bool UseRecords { get; set; } = true;
+
+                    /// <summary>Whether the generated properties should use nullable reference types.</summary>
+                    public bool Nullable { get; set; } = true;
                 }
             }
             """;

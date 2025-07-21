@@ -22,8 +22,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\OpenApi.Client\OpenApi.Client.csproj" />
-    <ProjectReference Include="..\..\src\OpenApi.Client.SourceGenerators\OpenApi.Client.SourceGenerators.csproj" />
+    <ProjectReference Include="..\..\src\OpenApi.Client.Cli\OpenApi.Client.Cli.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Update="OpenApis\openapi-1.2.0.json">

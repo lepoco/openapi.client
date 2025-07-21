@@ -5,21 +5,21 @@
 
 using OpenApi.Client.SourceGenerators.Converters;
 
-namespace OpenApi.Client.SourceGenerators.UnitTests.Converters;
+namespace OpenApi.Client.SourceGenerators.UnitTests;
 
-public sealed class PascalCaseConverterTests
+public sealed class CamelCaseConverterTests
 {
     [Theory]
     [InlineData(null, "")]
     [InlineData("", "")]
-    [InlineData("hello", "Hello")]
-    [InlineData("Hello", "Hello")]
-    [InlineData("hello world", "HelloWorld")]
-    [InlineData("hello_world", "HelloWorld")]
-    [InlineData("hello@world", "Helloworld")]
+    [InlineData("hello", "hello")]
+    [InlineData("Hello", "hello")]
+    [InlineData("hello world", "helloWorld")]
+    [InlineData("hello_world", "helloWorld")]
+    [InlineData("hello@world", "helloworld")]
     public void Convert_ShouldReturnExpectedResult(string? input, string expectedResult)
     {
-        string result = PascalCaseConverter.Convert(input);
+        string result = CamelCaseConverter.Convert(input);
 
         result.Should().Be(expectedResult);
     }
@@ -29,9 +29,9 @@ public sealed class PascalCaseConverterTests
     {
         string input = "hello@world#123";
 
-        string result = PascalCaseConverter.Convert(input);
+        string result = CamelCaseConverter.Convert(input);
 
-        result.Should().Be("Helloworld123");
+        result.Should().Be("helloworld123");
     }
 
     [Fact]
@@ -39,8 +39,8 @@ public sealed class PascalCaseConverterTests
     {
         string input = "héllo";
 
-        string result = PascalCaseConverter.Convert(input);
+        string result = CamelCaseConverter.Convert(input);
 
-        result.Should().Be("Hllo");
+        result.Should().Be("hllo");
     }
 }

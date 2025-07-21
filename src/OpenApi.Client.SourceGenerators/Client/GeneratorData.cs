@@ -23,4 +23,10 @@ public sealed record GeneratorData
     public string? Contents { get; init; }
 
     public required string? Templates { get; init; }
+
+    public string[] Operations { get; init; } = [];
+
+    public bool UseRecords { get; init; } = true;
+
+    public bool Nullable { get; init; } = true;
 }

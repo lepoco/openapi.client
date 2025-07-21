@@ -2,7 +2,7 @@
   <PropertyGroup>
     <AssemblyName>openapiclient</AssemblyName>
     <PackageId>OpenApiClient.Cli</PackageId>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFramework>$(CommonTargetFramework)</TargetFramework>
     <OutputType>exe</OutputType>
     <PackAsTool>true</PackAsTool>
     <ToolCommandName>openapiclient</ToolCommandName>

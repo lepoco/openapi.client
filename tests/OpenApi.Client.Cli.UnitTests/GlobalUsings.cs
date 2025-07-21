@@ -3,12 +3,8 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-global using System.Collections.Immutable;
 global using System.IO;
-global using System.Text;
-global using System.Threading;
 global using System.Threading.Tasks;
 global using AwesomeAssertions;
-global using Microsoft.CodeAnalysis;
-global using Microsoft.CodeAnalysis.Text;
+global using Spectre.Console.Cli;
 global using Xunit;

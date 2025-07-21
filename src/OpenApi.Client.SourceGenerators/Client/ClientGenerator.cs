@@ -197,31 +197,7 @@ public sealed class ClientGenerator(GeneratorData metadata)
             .ClassDeclaration(metadata.ClassName + "Exception")
             .AddModifiers(SyntaxFactory.Token(metadata.Access.ToSyntaxKind()))
             .AddAttributeLists(
-                SyntaxFactory.AttributeList(
-                    SyntaxFactory.SingletonSeparatedList(
-                        SyntaxFactory.Attribute(
-                            SyntaxFactory.ParseName("global::System.CodeDom.Compiler.GeneratedCode"),
-                            SyntaxFactory.AttributeArgumentList(
-                                SyntaxFactory.SeparatedList(
-                                    [
-                                        SyntaxFactory.AttributeArgument(
-                                            SyntaxFactory.LiteralExpression(
-                                                SyntaxKind.StringLiteralExpression,
-                                                SyntaxFactory.Literal(GeneratorName)
-                                            )
-                                        ),
-                                        SyntaxFactory.AttributeArgument(
-                                            SyntaxFactory.LiteralExpression(
-                                                SyntaxKind.StringLiteralExpression,
-                                                SyntaxFactory.Literal(GeneratorVersion)
-                                            )
-                                        ),
-                                    ]
-                                )
-                            )
-                        )
-                    )
-                )
+                SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(ComputeGeneratedAttribute()))
             )
             .AddBaseListTypes(
                 SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName("global::System.Exception"))
@@ -285,31 +261,7 @@ public sealed class ClientGenerator(GeneratorData metadata)
             .InterfaceDeclaration('I' + metadata.ClassName)
             .AddModifiers(SyntaxFactory.Token(metadata.Access.ToSyntaxKind()))
             .AddAttributeLists(
-                SyntaxFactory.AttributeList(
-                    SyntaxFactory.SingletonSeparatedList(
-                        SyntaxFactory.Attribute(
-                            SyntaxFactory.ParseName("global::System.CodeDom.Compiler.GeneratedCode"),
-                            SyntaxFactory.AttributeArgumentList(
-                                SyntaxFactory.SeparatedList(
-                                    [
-                                        SyntaxFactory.AttributeArgument(
-                                            SyntaxFactory.LiteralExpression(
-                                                SyntaxKind.StringLiteralExpression,
-                                                SyntaxFactory.Literal(GeneratorName)
-                                            )
-                                        ),
-                                        SyntaxFactory.AttributeArgument(
-                                            SyntaxFactory.LiteralExpression(
-                                                SyntaxKind.StringLiteralExpression,
-                                                SyntaxFactory.Literal(GeneratorVersion)
-                                            )
-                                        )
-                                    ]
-                                )
-                            )
-                        )
-                    )
-                )
+                SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(ComputeGeneratedAttribute()))
             )
             .WithLeadingTrivia(interfaceSummaryTrivia)
             .AddMembers([.. interfaceMembers])
@@ -418,31 +370,7 @@ public sealed class ClientGenerator(GeneratorData metadata)
                 SyntaxFactory.Token(SyntaxKind.PartialKeyword)
             )
             .AddAttributeLists(
-                SyntaxFactory.AttributeList(
-                    SyntaxFactory.SingletonSeparatedList(
-                        SyntaxFactory.Attribute(
-                            SyntaxFactory.ParseName("global::System.CodeDom.Compiler.GeneratedCode"),
-                            SyntaxFactory.AttributeArgumentList(
-                                SyntaxFactory.SeparatedList(
-                                    [
-                                        SyntaxFactory.AttributeArgument(
-                                            SyntaxFactory.LiteralExpression(
-                                                SyntaxKind.StringLiteralExpression,
-                                                SyntaxFactory.Literal(GeneratorName)
-                                            )
-                                        ),
-                                        SyntaxFactory.AttributeArgument(
-                                            SyntaxFactory.LiteralExpression(
-                                                SyntaxKind.StringLiteralExpression,
-                                                SyntaxFactory.Literal(GeneratorVersion)
-                                            )
-                                        ),
-                                    ]
-                                )
-                            )
-                        )
-                    )
-                )
+                SyntaxFactory.AttributeList(SyntaxFactory.SingletonSeparatedList(ComputeGeneratedAttribute()))
             )
             .AddBaseListTypes(
                 SyntaxFactory.SimpleBaseType(SyntaxFactory.ParseTypeName('I' + metadata.ClassName))
@@ -564,5 +492,30 @@ public sealed class ClientGenerator(GeneratorData metadata)
         // );
 
         return nameBuilder.Append(operation.OperationId?.ToPascalCase()).ToString();
+    }
+
+    private static AttributeSyntax ComputeGeneratedAttribute()
+    {
+        return SyntaxFactory.Attribute(
+            SyntaxFactory.ParseName("global::System.CodeDom.Compiler.GeneratedCode"),
+            SyntaxFactory.AttributeArgumentList(
+                SyntaxFactory.SeparatedList(
+                    [
+                        SyntaxFactory.AttributeArgument(
+                            SyntaxFactory.LiteralExpression(
+                                SyntaxKind.StringLiteralExpression,
+                                SyntaxFactory.Literal(GeneratorName)
+                            )
+                        ),
+                        SyntaxFactory.AttributeArgument(
+                            SyntaxFactory.LiteralExpression(
+                                SyntaxKind.StringLiteralExpression,
+                                SyntaxFactory.Literal(GeneratorVersion)
+                            )
+                        ),
+                    ]
+                )
+            )
+        );
     }
 }

@@ -25,6 +25,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApi.Client.SourceGenera
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApi.Client.SourceGenerators.UnitTests", "tests\OpenApi.Client.SourceGenerators.UnitTests\OpenApi.Client.SourceGenerators.UnitTests.csproj", "{07D95FF8-531B-5237-7018-C39645124B17}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApi.Client.Cli.UnitTests", "tests\OpenApi.Client.Cli.UnitTests\OpenApi.Client.Cli.UnitTests.csproj", "{0C407F0F-BE50-4850-B695-FE1C0910E8BB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -47,12 +49,17 @@ Global
 		{07D95FF8-531B-5237-7018-C39645124B17}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{07D95FF8-531B-5237-7018-C39645124B17}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{07D95FF8-531B-5237-7018-C39645124B17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0C407F0F-BE50-4850-B695-FE1C0910E8BB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C407F0F-BE50-4850-B695-FE1C0910E8BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C407F0F-BE50-4850-B695-FE1C0910E8BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C407F0F-BE50-4850-B695-FE1C0910E8BB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{07D95FF8-531B-5237-7018-C39645124B17} = {723E5DFE-E809-4C07-90CC-03F44C29E259}
+		{0C407F0F-BE50-4850-B695-FE1C0910E8BB} = {723E5DFE-E809-4C07-90CC-03F44C29E259}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5A90450F-432E-450C-9FE7-4C820639466E}

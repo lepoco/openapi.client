@@ -133,6 +133,10 @@ public sealed class OpenApiClientGenerator : IIncrementalGenerator
                     file.Name,
                     StringComparison.OrdinalIgnoreCase
                 )
+                || compilationAndFiles.GeneratorData.SelectedFile.Equals(
+                    $"{file.Name}.json",
+                    StringComparison.OrdinalIgnoreCase
+                )
             )
             {
                 additionalFileContents = file.Contents;
@@ -249,5 +253,11 @@ public sealed class OpenApiClientGenerator : IIncrementalGenerator
         public required Location? Location { get; init; }
 
         public required string? Templates { get; init; }
+
+        public string[] Operations { get; init; } = [];
+
+        public bool UseRecords { get; init; } = true;
+
+        public bool Nullable { get; init; } = true;
     }
 }

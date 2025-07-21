@@ -22,3 +22,9 @@ app.Configure(config =>
 await app.RunAsync(args);
 
 return;
+
+// Public partial declaration of a class for integration tests
+namespace OpenApi.Client.Cli
+{
+    public partial class Program;
+}
