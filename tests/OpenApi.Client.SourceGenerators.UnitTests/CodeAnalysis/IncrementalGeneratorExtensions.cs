@@ -3,10 +3,10 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using Microsoft.CodeAnalysis.CSharp;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Microsoft.CodeAnalysis.CSharp;
 
 namespace OpenApi.Client.SourceGenerators.UnitTests.CodeAnalysis;
 

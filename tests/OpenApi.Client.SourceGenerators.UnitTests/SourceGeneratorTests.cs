@@ -3,8 +3,8 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using OpenApi.Client.SourceGenerators.UnitTests.CodeAnalysis;
 using System.Linq;
+using OpenApi.Client.SourceGenerators.UnitTests.CodeAnalysis;
 
 namespace OpenApi.Client.SourceGenerators.UnitTests;
 

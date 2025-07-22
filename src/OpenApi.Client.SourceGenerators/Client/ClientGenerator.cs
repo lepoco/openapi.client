@@ -438,11 +438,9 @@ public sealed class ClientGenerator(GeneratorData metadata)
 
     private IEnumerable<MemberDeclarationSyntax> ComputeModels()
     {
-        foreach (KeyValuePair<string, IOpenApiSchema> schema in document.Components?.Schemas ?? [])
-        {
-
-        }
-
+        //foreach (KeyValuePair<string, IOpenApiSchema> schema in document.Components?.Schemas ?? [])
+        //{
+        //}
 
         // TODO: Implement model generation based on OpenAPI document
         yield break;

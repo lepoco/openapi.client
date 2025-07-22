@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApi.Client.SourceGenera
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApi.Client.Cli.UnitTests", "tests\OpenApi.Client.Cli.UnitTests\OpenApi.Client.Cli.UnitTests.csproj", "{0C407F0F-BE50-4850-B695-FE1C0910E8BB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OpenApi.Client.Mcp", "src\OpenApi.Client.Mcp\OpenApi.Client.Mcp.csproj", "{BA946406-F267-4996-8769-E5B607E18CB4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -53,6 +55,10 @@ Global
 		{0C407F0F-BE50-4850-B695-FE1C0910E8BB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0C407F0F-BE50-4850-B695-FE1C0910E8BB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0C407F0F-BE50-4850-B695-FE1C0910E8BB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA946406-F267-4996-8769-E5B607E18CB4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA946406-F267-4996-8769-E5B607E18CB4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA946406-F267-4996-8769-E5B607E18CB4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA946406-F267-4996-8769-E5B607E18CB4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

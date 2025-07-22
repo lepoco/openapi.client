@@ -22,7 +22,7 @@ public sealed record GeneratorData
 
     public string? Contents { get; init; }
 
-    public required string? Templates { get; init; }
+    public string? Templates { get; init; }
 
     public string[] Operations { get; init; } = [];
 

@@ -1,0 +1,25 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>$(CommonTargetFramework)</TargetFramework>
+    <UserSecretsId>47a6b027-b381-4465-8c68-1f63fc721408</UserSecretsId>
+    <DockerfileContext>..\..</DockerfileContext>
+    <ContainerDevelopmentMode>Fast</ContainerDevelopmentMode>
+    <DockerfileRunEnvironmentFiles>..\..\.env</DockerfileRunEnvironmentFiles>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.CodeAnalysis.Common" />
+    <PackageReference Include="ModelContextProtocol" />
+    <PackageReference Include="ModelContextProtocol.AspNetCore" />
+    <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" />
+    <PackageReference Include="Microsoft.Extensions.Http.Resilience" />
+    <PackageReference Include="Microsoft.OpenApi" />
+    <PackageReference Include="Microsoft.OpenApi.YamlReader" />
+    <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AspNetCore" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.Http" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\OpenApi.Client.SourceGenerators\OpenApi.Client.SourceGenerators.csproj" />
+  </ItemGroup>
+</Project>
