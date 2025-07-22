@@ -4,7 +4,7 @@
     <UserSecretsId>47a6b027-b381-4465-8c68-1f63fc721408</UserSecretsId>
     <DockerfileContext>..\..</DockerfileContext>
     <ContainerDevelopmentMode>Fast</ContainerDevelopmentMode>
-    <DockerfileRunEnvironmentFiles>..\..\.env</DockerfileRunEnvironmentFiles>
+    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.Common" />
