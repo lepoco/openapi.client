@@ -171,7 +171,6 @@ public sealed class ClientGenerator(GeneratorData metadata)
             .CompilationUnit()
             .AddMembers(namespaceDeclaration);
 
-        // Add an empty line after OpenApiClientGeneration.Header
         SyntaxTriviaList headerTrivia = SyntaxFactory.ParseLeadingTrivia(OpenApiClientGeneration.Header);
 
         compilationUnit = compilationUnit.WithLeadingTrivia(headerTrivia);
@@ -255,8 +254,6 @@ public sealed class ClientGenerator(GeneratorData metadata)
 
         IEnumerable<MemberDeclarationSyntax> interfaceMembers = ComputeInterfaceMembers();
 
-        // Generate the interface with the updated summary
-        // Add GeneratedCodeAttribute to the interface
         return SyntaxFactory
             .InterfaceDeclaration('I' + metadata.ClassName)
             .AddModifiers(SyntaxFactory.Token(metadata.Access.ToSyntaxKind()))
@@ -277,6 +274,15 @@ public sealed class ClientGenerator(GeneratorData metadata)
                     ?? []
             )
             {
+                if (
+                    metadata.Operations.Length > 0
+                    && !metadata.Operations.Contains(openApiOperation.Value.OperationId)
+                )
+                {
+                    // NOTE: Skip operations not included in the metadata
+                    continue;
+                }
+
                 // TODO: Handle parameters, request bodies, and responses
                 IdentifierNameSyntax taskType = SyntaxFactory.IdentifierName(
                     "global::System.Threading.Tasks.Task"
@@ -362,7 +368,6 @@ public sealed class ClientGenerator(GeneratorData metadata)
                 )
         );
 
-        // Add GeneratedCodeAttribute to the class
         return SyntaxFactory
             .ClassDeclaration(metadata.ClassName)
             .AddModifiers(
@@ -388,54 +393,19 @@ public sealed class ClientGenerator(GeneratorData metadata)
                     ?? []
             )
             {
+                if (
+                    metadata.Operations.Length > 0
+                    && !metadata.Operations.Contains(openApiOperation.Value.OperationId)
+                )
+                {
+                    // NOTE: Skip operations not included in the metadata
+                    continue;
+                }
+
                 // TODO: Handle parameters, request bodies, and responses
                 IdentifierNameSyntax taskType = SyntaxFactory.IdentifierName(
                     "global::System.Threading.Tasks.Task"
                 );
-
-                FieldDeclarationSyntax httpClientField = SyntaxFactory
-                    .FieldDeclaration(
-                        SyntaxFactory
-                            .VariableDeclaration(
-                                SyntaxFactory.ParseTypeName("global::System.Net.Http.HttpClient")
-                            )
-                            .AddVariables(SyntaxFactory.VariableDeclarator("_httpClient"))
-                    )
-                    .AddModifiers(
-                        SyntaxFactory.Token(SyntaxKind.PrivateKeyword),
-                        SyntaxFactory.Token(SyntaxKind.ReadOnlyKeyword)
-                    );
-
-                PropertyDeclarationSyntax httpClientProperty = SyntaxFactory
-                    .PropertyDeclaration(
-                        SyntaxFactory.ParseTypeName("global::System.Net.Http.HttpClient"),
-                        "HttpClient"
-                    )
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                    .WithExpressionBody(
-                        SyntaxFactory.ArrowExpressionClause(SyntaxFactory.IdentifierName("_httpClient"))
-                    )
-                    .WithSemicolonToken(SyntaxFactory.Token(SyntaxKind.SemicolonToken));
-
-                ConstructorDeclarationSyntax constructor = SyntaxFactory
-                    .ConstructorDeclaration(metadata.ClassName)
-                    .AddModifiers(SyntaxFactory.Token(SyntaxKind.PublicKeyword))
-                    .AddParameterListParameters(
-                        SyntaxFactory
-                            .Parameter(SyntaxFactory.Identifier("httpClient"))
-                            .WithType(SyntaxFactory.ParseTypeName("global::System.Net.Http.HttpClient"))
-                    )
-                    .WithBody(
-                        SyntaxFactory.Block(
-                            SyntaxFactory.ExpressionStatement(
-                                SyntaxFactory.AssignmentExpression(
-                                    SyntaxKind.SimpleAssignmentExpression,
-                                    SyntaxFactory.IdentifierName("_httpClient"),
-                                    SyntaxFactory.IdentifierName("httpClient")
-                                )
-                            )
-                        )
-                    );
 
                 yield return SyntaxFactory
                     .MethodDeclaration(
@@ -468,6 +438,10 @@ public sealed class ClientGenerator(GeneratorData metadata)
 
     private IEnumerable<MemberDeclarationSyntax> ComputeModels()
     {
+        //foreach (KeyValuePair<string, IOpenApiSchema> schema in document.Components?.Schemas ?? [])
+        //{
+        //}
+
         // TODO: Implement model generation based on OpenAPI document
         yield break;
     }

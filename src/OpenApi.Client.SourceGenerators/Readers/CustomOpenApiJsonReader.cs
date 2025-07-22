@@ -6,10 +6,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT license.
 
-using Microsoft.OpenApi;
-using Microsoft.OpenApi.Reader;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Microsoft.OpenApi;
+using Microsoft.OpenApi.Reader;
 
 namespace OpenApi.Client.SourceGenerators.Readers;
 

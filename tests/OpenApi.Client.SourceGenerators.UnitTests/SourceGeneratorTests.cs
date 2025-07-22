@@ -13,7 +13,7 @@ public sealed class SourceGeneratorTests
     [Fact]
     public void Initialize_ShouldGenerateAttribute()
     {
-        GeneratorDriver driver = new OpenApiClientGenerator().CreateDriver();
+        GeneratorDriver driver = new OpenApiClientGenerator().RunGenerators();
 
         GeneratorDriverRunResult result = driver.GetRunResult();
 
@@ -36,14 +36,21 @@ public sealed class SourceGeneratorTests
     [Fact]
     public void Initialize_ShouldGenerateSourceCode()
     {
-        GeneratorDriver driver = new OpenApiClientGenerator().CreateDriver(
+        GeneratorDriver driver = new OpenApiClientGenerator().RunGenerators(
             """
             using OpenApi.Client;
 
-            namespace OpenApiClientUnitTest
+            namespace TickTack.Module
             {
-                [OpenApiClient("openapi-3.1.0")]
-                public partial class MyClient
+                [OpenApiClient(
+                    "openapi-3.1.0",
+                    "get-square",
+                    "get-board",
+                    Serialization = OpenApiClientSerialization.SystemTextJson,
+                    Nullable = true,
+                    UseRecords = true
+                )]
+                internal partial class TickTackToeClient
                 {
                 }
             }
@@ -53,6 +60,16 @@ public sealed class SourceGeneratorTests
 
         GeneratorDriverRunResult result = driver.GetRunResult();
 
-        var test = 1;
+        SyntaxTree? generatedClientTree = result.GeneratedTrees.FirstOrDefault(x =>
+            x.FilePath.Contains("TickTackToeClient.g.cs")
+        );
+        generatedClientTree.Should().NotBeNull();
+
+        string generatedText = generatedClientTree.GetText().ToString();
+
+        generatedText
+            .Should()
+            .ContainAll("internal partial class TickTackToeClient", "GetSquare", "GetBoard")
+            .And.NotContainAll("PutSquare");
     }
 }
