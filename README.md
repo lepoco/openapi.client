@@ -7,6 +7,42 @@ OpenAPI Client is a toolkit that helps you create HTTP clients for external APIs
 
 The repository contains NuGet package source code, which uses C# code generators that can be used to generate native C# API clients from YAML or JSON files.
 
+## MCP Server
+
+Build for yourself:
+
+```cmd
+docker buildx build ./ -f ./src/OpenApi.Client.Mcp/Dockerfile -t mcp/openapi --no-cache
+```
+
+or
+
+```cmd
+dotnet publish .\src\OpenApi.Client.Mcp\OpenApi.Client.Mcp.csproj -c Release /t:PublishContainer
+```
+
+Then
+
+```cmd
+docker run -d --name mcp-openapi mcp/openapi -e MODE=Stdio
+docker run -d --name mcp-openapi mcp/openapi -e MODE=Http -p 64622:8080
+```
+
+You can configure your *mcp.json* file
+
+```json
+{
+  "servers": {
+    "openapi.mcp": {
+      "type": "stdio",
+      "command": "docker",
+      "args": ["run", "-i", "--rm", "mcp/openapi"]
+    }
+  },
+  "inputs": []
+}
+```
+
 ## Gettings started
 
 OpenApiClient is available as NuGet package on NuGet.org:  

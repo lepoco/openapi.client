@@ -3,14 +3,13 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-using ModelContextProtocol.Server;
-
 // ReSharper disable UnusedMember.Global
 namespace OpenApi.Client.Mcp.Tools;
 
 [McpServerToolType]
 internal sealed class OpenApiTools
 {
+#if DEBUG
     [
         McpServerTool,
         Description(
@@ -26,6 +25,7 @@ internal sealed class OpenApiTools
 
         return result;
     }
+#endif
 
     [
         McpServerTool,

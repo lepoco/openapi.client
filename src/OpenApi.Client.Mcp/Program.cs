@@ -3,66 +3,97 @@
 // Copyright (C) Leszek Pomianowski and OpenAPI Client Contributors.
 // All Rights Reserved.
 
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+ILogger logger = StaticLoggerFactory.New();
+ServerOptions serverOptions = ConfigurationFactory.CreateServerOptions(args);
 
-builder.Logging.AddConsole(consoleLogOptions =>
+logger.LogInformation("Configuring MCP Server with mode: {Mode}", serverOptions.Mode);
+
+// NOTE: Do not use whole ASP.NET stack with just interactive console
+if (serverOptions.Mode == McpMode.Stdio)
 {
-    // Configure all logs to go to stderr
-    consoleLogOptions.LogToStandardErrorThreshold = LogLevel.Trace;
-});
+    logger.LogInformation("Adding Stdio transport to MCP Server.");
 
-#if DEBUG
-builder
-    .Services.AddOpenTelemetry()
-    .WithTracing(b => b.AddSource("*").AddAspNetCoreInstrumentation().AddHttpClientInstrumentation())
-    .WithMetrics(b => b.AddMeter("*").AddAspNetCoreInstrumentation().AddHttpClientInstrumentation())
-    .WithLogging()
-    .UseOtlpExporter();
-#endif
+    HostApplicationBuilder builder = Host.CreateApplicationBuilder(args);
+    AddMcpServices(builder, serverOptions.Mode).WithStdioServerTransport();
 
-builder.Services.AddTransient<IOpenApiService, OpenApiService>();
+    logger.LogInformation("Starting the application.");
 
-builder.Services.AddHttpClient();
+    await builder.Build().RunAsync();
 
-ServerOptions serverOptions = new();
-IConfigurationSection section = builder.Configuration.GetSection("Server");
-section.Bind(serverOptions);
-
-string? mode = Environment.GetEnvironmentVariable("mode") ?? Environment.GetEnvironmentVariable("MODE");
-
-if (mode?.Contains("both", StringComparison.InvariantCultureIgnoreCase) ?? false)
-{
-    serverOptions.Mode = McpMode.Both;
-}
-else if (mode?.Contains("http", StringComparison.InvariantCultureIgnoreCase) ?? false)
-{
-    serverOptions.Mode = McpMode.Http;
+    // NOTE: Stop here, as we are running in Stdio mode.
+    return;
 }
 
-IMcpServerBuilder mcpBuilder = builder.Services.AddMcpServer();
+logger.LogInformation("Adding HTTP transport to MCP Server.");
+
+WebApplicationBuilder webBuilder = WebApplication.CreateBuilder(args);
+IMcpServerBuilder mcpBuilder = AddMcpServices(webBuilder, serverOptions.Mode).WithHttpTransport();
 
 if (serverOptions.Mode == McpMode.Both)
 {
-    _ = mcpBuilder.WithHttpTransport().WithStdioServerTransport();
-}
-else if (serverOptions.Mode == McpMode.Stdio)
-{
+    logger.LogInformation("Adding Stdio transport to MCP Server.");
     _ = mcpBuilder.WithStdioServerTransport();
 }
-else
+
+#if !DEBUG
+webBuilder.WebHost.ConfigureKestrel(options =>
 {
-    _ = mcpBuilder.WithHttpTransport();
-}
+    options.ListenAnyIP(80);
+    options.ListenAnyIP(8080);
+    options.ListenAnyIP(8000);
+});
+#endif
 
-_ = mcpBuilder.WithTools<OpenApiTools>();
+await using WebApplication app = webBuilder.Build();
 
-await using WebApplication app = builder.Build();
-
-if (serverOptions.Mode is McpMode.Http or McpMode.Both)
-{
-    app.MapMcp();
-}
+app.MapMcp();
+app.MapHealthChecks("/healthz");
 
 await app.RunAsync();
 
 return;
+
+static IMcpServerBuilder AddMcpServices(IHostApplicationBuilder builder, McpMode mode)
+{
+    builder.Logging.AddConsole(consoleLogOptions =>
+    {
+        // Configure all logs to go to stderr
+        consoleLogOptions.LogToStandardErrorThreshold = LogLevel.Trace;
+    });
+
+#if DEBUG
+    builder
+        .Services.AddOpenTelemetry()
+        .WithTracing(b => b.AddSource("*").AddAspNetCoreInstrumentation().AddHttpClientInstrumentation())
+        .WithMetrics(b => b.AddMeter("*").AddAspNetCoreInstrumentation().AddHttpClientInstrumentation())
+        .WithLogging()
+        .UseOtlpExporter();
+#endif
+
+    builder
+        .Services.AddHttpClient<IOpenApiService, OpenApiService>()
+        .ConfigurePrimaryHttpMessageHandler(() =>
+        {
+            return new HttpClientHandler
+            {
+                ServerCertificateCustomValidationCallback = (_, _, _, _) => true,
+                AllowAutoRedirect = true,
+            };
+        });
+
+    if (mode != McpMode.Stdio)
+    {
+        builder.Services.AddHealthChecks();
+    }
+
+    IMcpServerBuilder mcpBuilder = builder
+        .Services.AddMcpServer(mcp =>
+        {
+            mcp.ServerInfo = new Implementation { Name = "OpenAPI Toolkit MCP Server", Version = "1.0.0" };
+            mcp.InitializationTimeout = TimeSpan.FromHours(1);
+            mcp.ScopeRequests = true;
+        })
+        .WithTools<OpenApiTools>();
+
+    return mcpBuilder;
+}

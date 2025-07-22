@@ -9,50 +9,29 @@ using OpenApi.Client.SourceGenerators.Client;
 
 namespace OpenApi.Client.Mcp.Services;
 
-internal sealed class OpenApiService(IServiceProvider serviceProvider, ILogger<OpenApiService> logger)
-    : IOpenApiService
+internal sealed class OpenApiService(HttpClient client, ILogger<OpenApiService> logger) : IOpenApiService
 {
-#if DEBUG
     /// <inheritdoc />
     public async Task<string> CreateFromFileAsync(
         string address,
         CancellationToken cancellationToken = default
     )
     {
-        IHttpClientFactory factory = serviceProvider.GetRequiredService<IHttpClientFactory>();
+        string? contents = await GetContentsAsync(address, cancellationToken);
 
-        using HttpClient client = factory.CreateClient("openapi-fetcher");
-
-        Stream contents;
-
-        try
+        if (contents is null)
         {
-            using HttpResponseMessage response = await client.GetAsync(address, cancellationToken);
-
-            if (!response.IsSuccessStatusCode)
-            {
-                logger.LogFetchingFailed(address);
-
-                return "Failed to fetch OpenAPI document: " + response.ReasonPhrase;
-            }
-
-            contents = await response.Content.ReadAsStreamAsync(cancellationToken);
-        }
-        catch (Exception e)
-        {
-            logger.LogFetchingFailedWithError(e, address);
-
-            return "Error fetching OpenAPI document: " + e.Message;
+            return "Error fetching OpenAPI document";
         }
 
-        ClientGenerator generator = new ClientGenerator(
+        ClientGenerator generator = new(
             new GeneratorData
             {
                 NamespaceName = "OpenApi.Client.Generated",
                 ClassName = "OpenApiClient",
                 Access = Accessibility.Public,
                 SerializationTool = SerializationTool.SystemTextJson,
-                Source = contents,
+                Contents = contents,
             }
         );
 
@@ -71,14 +50,20 @@ internal sealed class OpenApiService(IServiceProvider serviceProvider, ILogger<O
 
         return result.GeneratedClient ?? "Client generation failed, no client was generated.";
     }
-#endif
 
     public async Task<string> GetOperationsAsync(
         string address,
         CancellationToken cancellationToken = default
     )
     {
-        ReadResult readResult = await OpenApiDocument.LoadAsync(address, token: cancellationToken);
+        string? contents = await GetContentsAsync(address, cancellationToken);
+
+        if (contents is null)
+        {
+            return "Error fetching OpenAPI document";
+        }
+
+        ReadResult readResult = OpenApiModelFactory.Parse(input: contents);
 
         if (readResult.Diagnostic?.Errors.Count > 0)
         {
@@ -96,7 +81,7 @@ internal sealed class OpenApiService(IServiceProvider serviceProvider, ILogger<O
             <operations>
             """;
 
-        foreach (KeyValuePair<string, IOpenApiPathItem> singlePath in readResult.Document.Paths)
+        foreach (KeyValuePair<string, IOpenApiPathItem> singlePath in readResult.Document?.Paths ?? [])
         {
             foreach (
                 KeyValuePair<HttpMethod, OpenApiOperation> operation in singlePath.Value.Operations ?? []
@@ -124,7 +109,14 @@ internal sealed class OpenApiService(IServiceProvider serviceProvider, ILogger<O
         CancellationToken cancellationToken = default
     )
     {
-        ReadResult readResult = await OpenApiDocument.LoadAsync(address, token: cancellationToken);
+        string? contents = await GetContentsAsync(address, cancellationToken);
+
+        if (contents is null)
+        {
+            return "Error fetching OpenAPI document";
+        }
+
+        ReadResult readResult = OpenApiModelFactory.Parse(input: contents);
 
         if (readResult.Diagnostic?.Errors.Count > 0)
         {
@@ -180,7 +172,14 @@ internal sealed class OpenApiService(IServiceProvider serviceProvider, ILogger<O
     {
         try
         {
-            ReadResult readResult = await OpenApiDocument.LoadAsync(address, token: cancellationToken);
+            string? contents = await GetContentsAsync(address, cancellationToken);
+
+            if (contents is null)
+            {
+                return "Error fetching OpenAPI document";
+            }
+
+            ReadResult readResult = OpenApiModelFactory.Parse(input: contents);
 
             if (readResult.Diagnostic?.Errors.Count > 0)
             {
@@ -219,5 +218,32 @@ internal sealed class OpenApiService(IServiceProvider serviceProvider, ILogger<O
                     </validationResult>
                 """;
         }
+    }
+
+    private async Task<string?> GetContentsAsync(string address, CancellationToken cancellationToken)
+    {
+        string contents;
+
+        try
+        {
+            using HttpResponseMessage response = await client.GetAsync(address, cancellationToken);
+
+            if (!response.IsSuccessStatusCode)
+            {
+                logger.LogFetchingFailed(address);
+
+                return null;
+            }
+
+            contents = await response.Content.ReadAsStringAsync(cancellationToken);
+        }
+        catch (Exception e)
+        {
+            logger.LogFetchingFailedWithError(e, address);
+
+            return null;
+        }
+
+        return contents;
     }
 }

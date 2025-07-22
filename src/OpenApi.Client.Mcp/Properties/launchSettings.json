@@ -1,14 +1,24 @@
 {
   "profiles": {
-    "ModelContextProtocol": {
+    "ModelContextProtocol (HTTP)": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "OTEL_SERVICE_NAME": "sse-server",
+        "MODE": "Http"
+      },
+      "applicationUrl": "http://localhost:64622",
+      "launchUrl": "http://localhost:64622/healthz"
+    },
+    "ModelContextProtocol (Stdio)": {
       "commandName": "Project",
       "launchBrowser": false,
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development",
         "OTEL_SERVICE_NAME": "sse-server",
-        "MODE": "Both"
-      },
-      "applicationUrl": "http://localhost:64622"
+        "MODE": "Stdio"
+      }
     }
   }
 }
