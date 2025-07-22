@@ -13,15 +13,18 @@ internal sealed class OpenApiTools
     [
         McpServerTool,
         Description(
-            "Create OpenAPI client from the given URL address of the OpenAPI json file or swagger generated json"
+            "Generate an OpenAPI client from a URL OR a raw JSON string or file contents pointing to an OpenAPI or Swagger JSON document."
         )
     ]
     public static async Task<string?> CreateClientFromUrl(
         IOpenApiService service,
-        [Description("Url address of the OpenAPI json file or swagger generated json")] string address
+        [Description(
+            "URL address of the OpenAPI or Swagger JSON document OR raw JSON contents of the OpenAPI or Swagger specification. Can be provided as text or from a file."
+        )]
+            string addressOrFileContents
     )
     {
-        string result = await service.CreateFromFileAsync(address);
+        string result = await service.CreateCsharpClientAsync(addressOrFileContents);
 
         return result;
     }
@@ -30,31 +33,24 @@ internal sealed class OpenApiTools
     [
         McpServerTool,
         Description(
-            "Get list of operations from the given URL address of the OpenAPI json file or swagger generated json"
+            "Generate a C# code snippet for a given operation ID from a URL OR a raw JSON string or file contents pointing to an OpenAPI or Swagger JSON document."
         )
     ]
-    public static async Task<string> GetListOfOperations(
+    public static async Task<string> CreateCsharpSnippet(
         IOpenApiService service,
-        [Description("Url address of the OpenAPI json file or swagger generated json")] string address
+        [Description(
+            "URL address of the OpenAPI or Swagger JSON document OR raw JSON contents of the OpenAPI or Swagger specification. Can be provided as text or from a file."
+        )]
+            string addressOrFileContents,
+        [Description("Operation ID for which to create a snippet.")] string operationId,
+        [Description("Optional base URL to be used in the generated cURL command.")] string? baseAddress
     )
     {
-        string result = await service.GetOperationsAsync(address);
-
-        return result;
-    }
-
-    [
-        McpServerTool,
-        Description("Generate a curl command for a given operation ID from the OpenAPI specification")
-    ]
-    public static async Task<string?> GenerateCurlCommand(
-        IOpenApiService service,
-        [Description("Url address of the OpenAPI json file or swagger generated json")] string address,
-        [Description("Operation ID for which to generate the curl command")] string operationId,
-        [Description("Base address for the curl command, if any (optional)")] string? baseAddress
-    )
-    {
-        string result = await service.GenerateCurlCommandAsync(address, operationId, baseAddress);
+        string result = await service.CreateCsharpSnippetAsync(
+            addressOrFileContents,
+            operationId,
+            baseAddress
+        );
 
         return result;
     }
@@ -62,15 +58,82 @@ internal sealed class OpenApiTools
     [
         McpServerTool,
         Description(
-            "Validate the structure and syntax of an OpenAPI document to ensure it adheres to the OpenAPI specification"
+            "Retrieve a list of operations (endpoints) from a URL OR a raw JSON string or file contents pointing to an OpenAPI or Swagger JSON document."
         )
     ]
-    public static async Task<string> ValidateOpenApiDocument(
+    public static async Task<string> GetListOfOperations(
         IOpenApiService service,
-        [Description("Url address of the OpenAPI json file or swagger generated json")] string address
+        [Description(
+            "URL address of the OpenAPI or Swagger JSON document OR raw JSON contents of the OpenAPI or Swagger specification. Can be provided as text or from a file."
+        )]
+            string addressOrFileContents
     )
     {
-        string result = await service.ValidateDocumentAsync(address);
+        string result = await service.GetOperationsAsync(addressOrFileContents);
+
+        return result;
+    }
+
+    [
+        McpServerTool,
+        Description(
+            "Generate a cURL command for a given operation ID from a URL OR a raw JSON string or file contents pointing to an OpenAPI or Swagger JSON document."
+        )
+    ]
+    public static async Task<string?> GenerateCurlCommand(
+        IOpenApiService service,
+        [Description(
+            "URL address of the OpenAPI or Swagger JSON document OR raw JSON contents of the OpenAPI or Swagger specification. Can be provided as text or from a file."
+        )]
+            string addressOrFileContents,
+        [Description("Operation ID for which to generate the cURL command.")] string operationId,
+        [Description("Optional base URL to be used in the generated cURL command.")] string? baseAddress
+    )
+    {
+        string result = await service.GenerateCurlCommandAsync(
+            addressOrFileContents,
+            operationId,
+            baseAddress
+        );
+
+        return result;
+    }
+
+    [
+        McpServerTool,
+        Description(
+            "Analyze and validate an OpenAPI or Swagger document provided as a URL OR a raw JSON string or file contents, and list possible errors, issues and problems with specification for the specified operation ID."
+        )
+    ]
+    public static async Task<string> ValidateDocument(
+        IOpenApiService service,
+        [Description(
+            "URL address of the OpenAPI or Swagger JSON document OR raw JSON contents of the OpenAPI or Swagger specification. Can be provided as text or from a file."
+        )]
+            string addressOrFileContents
+    )
+    {
+        string result = await service.ValidateDocumentAsync(addressOrFileContents);
+
+        return result;
+    }
+
+    [
+        McpServerTool,
+        Description(
+            "Analyze an OpenAPI or Swagger document provided as a URL OR a raw JSON string or file contents, and list possible HTTP responses (status codes and descriptions) for the specified operation ID."
+        )
+    ]
+    public static async Task<string> GetKnownResponses(
+        IOpenApiService service,
+        [Description(
+            "URL address of the OpenAPI or Swagger JSON document OR raw JSON contents of the OpenAPI or Swagger specification. Can be provided as text or from a file."
+        )]
+            string addressOrFileContents,
+        [Description("Operation ID for which to retrieve known responses.")] string operationId
+    )
+    {
+        string result = await service.GetKnownResponsesAsync(addressOrFileContents, operationId);
 
         return result;
     }

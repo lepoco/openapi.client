@@ -1,39 +1,56 @@
 # ☄️ OpenAPI Client
 
-[Created with ❤ in Poland by lepo.co](https://lepo.co/) and [wonderful open-source community](https://github.com/lepoco/openapi.client/graphs/contributors)  
-OpenAPI Client is a toolkit that helps you create HTTP clients for external APIs based on their OpenAPI specifications. It simplifies the process of consuming and interacting with various web services. The project is developed and maintained by lepo.co and other community contributors.
+[Created with ❤ in Poland by lepo.co](https://lepo.co/) and [the awesome open-source community](https://github.com/lepoco/openapi.client/graphs/contributors).  
+OpenAPI Client is a modern toolkit for developers working with OpenAPI/Swagger specifications. It provides multiple tools to simplify the creation, inspection, validation, and integration of OpenAPI clients across .NET projects and MCP (Model Context Protocol) environments.
 
-## 👀 What does this repo contain?
+## 🧰 What's in this repo?
 
-The repository contains NuGet package source code, which uses C# code generators that can be used to generate native C# API clients from YAML or JSON files.
+This repository contains a suite of OpenAPI tools designed to support different workflows:
 
-## MCP Server
+| Tool                     | Description                                                                    |
+| ------------------------ | ------------------------------------------------------------------------------ |
+| 🧠 .NET Source Generator | Generates C# HTTP clients directly from OpenAPI JSON/YAML files at build time. |
+| 💻 .NET CLI Tool         | Command-line tool to generate clients from OpenAPI definitions manually.       |
+| 🛰️ MCP Server            | Containerized server with built-in tools for working with OpenAPI specs.       |
 
-Build for yourself:
+## 🚀 MCP Server Tools
 
-```cmd
-docker buildx build ./ -f ./src/OpenApi.Client.Mcp/Dockerfile -t mcp/openapi --no-cache
+The MCP Server is the central piece of this toolkit. It runs as a standalone container or inside an MCP setup and exposes tools for working with OpenAPI documents.
+
+### 🛠️ Available Server Tools
+
+| Tool                     | Description                                                                                |
+| ------------------------ | ------------------------------------------------------------------------------------------ |
+| `get_list_of_operations` | Lists all operation IDs from a given OpenAPI or Swagger JSON document.                     |
+| `get_known_responses`    | Lists all known responses for given operation IDs from a OpenAPI or Swagger JSON document. |
+| `validate_document`      | Validates the structure and syntax of an OpenAPI JSON document.                            |
+| `generate_curl_command`  | Generates a cURL command for a specific operation ID.                                      |
+| `create_csharp_snippet`  | Creates a simple HTTP request for a given operation ID.                                    |
+
+### 🐳 Run the server with Docker
+
+Build the image:
+
+```bash
+docker buildx build ./ -t mcp/openapi --no-cache
+# or
+dotnet publish ./src/OpenApi.Client.Mcp/OpenApi.Client.Mcp.csproj -c Release /t:PublishContainer
 ```
 
-or
+Run the container:
 
-```cmd
-dotnet publish .\src\OpenApi.Client.Mcp\OpenApi.Client.Mcp.csproj -c Release /t:PublishContainer
+```bash
+docker run -d -i --rm --name mcp-openapi mcp/openapi
+# or for HTTP mode:
+docker run -d -i --rm --name mcp-openapi mcp/openapi -e MODE=Http -p 64622:8080
 ```
 
-Then
-
-```cmd
-docker run -d --name mcp-openapi mcp/openapi -e MODE=Stdio
-docker run -d --name mcp-openapi mcp/openapi -e MODE=Http -p 64622:8080
-```
-
-You can configure your *mcp.json* file
+Example MCP config (`.mcp.json`):
 
 ```json
 {
   "servers": {
-    "openapi.mcp": {
+    "openapi": {
       "type": "stdio",
       "command": "docker",
       "args": ["run", "-i", "--rm", "mcp/openapi"]
@@ -43,12 +60,12 @@ You can configure your *mcp.json* file
 }
 ```
 
-## Gettings started
+## 📦 NuGet Package (Source Generator)
 
 OpenApiClient is available as NuGet package on NuGet.org:  
 <https://www.nuget.org/packages/OpenApiClient>
 
-You can add it to your project using .NET CLI:
+Install the package to enable automatic OpenAPI client generation:
 
 ```powershell
 dotnet add package OpenApiClient
@@ -60,82 +77,50 @@ dotnet add package OpenApiClient
 NuGet\Install-Package OpenApiClient
 ```
 
-, you can also use the .NET CLI tool to generate the classes using commands
-
-```powershell
-dotnet tool install --global OpenApiClient.Cli
-```
-
-Define an Open API file as content in your **.csproj** file.
+In your .csproj:
 
 ```xml
-<Project Sdk="Microsoft.NET.Sdk">
-
-  <PropertyGroup>
-    <TargetFrameworks>net8.0</TargetFrameworks>
-  </PropertyGroup>
-
-  <ItemGroup>
-    <PackageReference Include="OpenApiClient" Version="1.0.0">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>compile; build; analyzers</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
-
-  <ItemGroup>
-    <OpenApiContract Include="google.youtube.api.json" />
-  </ItemGroup>
-
-</Project>
+<ItemGroup>
+  <AdditionalFiles Include="google.youtube.api.json" />
+</ItemGroup>
 ```
 
-Define your partial class as open api client
+Define a client:
 
 ```csharp
-/// <summary>
-/// My YouTube Client.
-/// </summary>
 [OpenApiClient("google.youtube.api")]
 public partial class YouTubeClient;
 ```
 
-You can now use your generated client!
+Use it:
 
 ```csharp
-IYouTubeClient client = new YouTubeClient(new HttpClient());
-
-var subscribersCount = client.SubscribersCountAsync("mychannel", CancellationToken.None);
+var client = new YouTubeClient(new HttpClient());
+var subs = await client.SubscribersCountAsync("mychannel", CancellationToken.None);
 ```
 
-## Known limitations
+### Known limitations
 
 Since we are using the generated internal `OpenApiAttribute` as a marker, conflicts may occur when we use `InternalsVisibleTo`.
 
 We found the use of nullable essential, so C# 8.0 is required.
 
+## 💻 .NET CLI Tool
+
+Generate OpenAPI clients from the terminal:
+
+```bash
+dotnet tool install --global OpenApiClient.Cli
+```
+
+```bash
+dotnet openapi generate ./google.youtube.api.json --output ./clients/YouTubeClient.cs --namespace Google.YouTube --classname YouTubeClient
+```
+
 ## OpenAPI
 
 OpenAPI specification is available at:  
 <https://github.com/OAI/OpenAPI-Specification>
-
-## Community Toolkit
-
-The OpenAPI Client is inspired by the MVVM Community Toolkit:  
-<https://github.com/CommunityToolkit/dotnet>
-
-## Special thanks
-
-JetBrains was kind enough to lend a license for the open-source **dotUltimate** for Open API Client development. Learn more here:
-
-- https://www.jetbrains.com/dotnet/
-- https://www.jetbrains.com/opensource/
-
-## Compilation
-
-Use Visual Studio 2022 and invoke the .sln.
-
-Visual Studio  
-**OpenAPI Client** is an Open Source project. You are entitled to download and use the freely available Visual Studio Community Edition to build, run or develop for OpenAPI Client. As per the Visual Studio Community Edition license, this applies regardless of whether you are an individual or a corporate user.
 
 ## Code of Conduct
 

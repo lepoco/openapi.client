@@ -20,5 +20,8 @@ RUN dotnet publish "./src/OpenApi.Client.Mcp/OpenApi.Client.Mcp.csproj" -c Relea
 # This stage is used in production or when running from VS in regular mode (Default when not using the Debug configuration)
 FROM base AS final
 WORKDIR /app
+EXPOSE 80
+EXPOSE 8080
+EXPOSE 8000
 COPY --from=publish /app/publish .
 ENTRYPOINT ["dotnet", "OpenApi.Client.Mcp.dll"]

@@ -8,27 +8,55 @@ namespace OpenApi.Client.Mcp.Services;
 internal interface IOpenApiService
 {
     /// <summary>
-    /// Creates an OpenAPI client from the specified URL address of the OpenAPI JSON file or Swagger-generated JSON.
+    /// Generates an OpenAPI client from a URL pointing to an OpenAPI or Swagger JSON document.
     /// </summary>
-    Task<string> CreateFromFileAsync(string address, CancellationToken cancellationToken = default);
+    Task<string> CreateCsharpClientAsync(
+        string addressOrFileContents,
+        CancellationToken cancellationToken = default
+    );
 
     /// <summary>
-    /// Retrieves a list of operations from the specified OpenAPI JSON file or Swagger-generated JSON.
+    /// Generates a C# code snippet for a given operation ID from the specified OpenAPI document or Swagger-generated JSON.
     /// </summary>
-    Task<string> GetOperationsAsync(string address, CancellationToken cancellationToken = default);
-
-    /// <summary>
-    /// Generates a curl command for a given operation ID from the OpenAPI specification.
-    /// </summary>
-    Task<string> GenerateCurlCommandAsync(
-        string address,
+    Task<string> CreateCsharpSnippetAsync(
+        string addressOrFileContents,
         string operationId,
         string? baseAddress,
         CancellationToken cancellationToken = default
     );
 
     /// <summary>
-    /// Validates the OpenAPI document at the specified address and returns a string indicating the validation result.
+    /// Retrieves a list of operations (endpoints) from the specified OpenAPI document or Swagger-generated JSON.
     /// </summary>
-    Task<string> ValidateDocumentAsync(string address, CancellationToken cancellationToken = default);
+    Task<string> GetOperationsAsync(
+        string addressOrFileContents,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
+    /// Validates the OpenAPI document or Swagger-generated JSON.
+    /// </summary>
+    Task<string> ValidateDocumentAsync(
+        string addressOrFileContents,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
+    /// Retrieves known responses for the specified OpenAPI document or Swagger-generated JSON.
+    /// </summary>
+    Task<string> GetKnownResponsesAsync(
+        string addressOrFileContents,
+        string operationId,
+        CancellationToken cancellationToken = default
+    );
+
+    /// <summary>
+    /// Generates a cURL command for a given operation ID from the specified OpenAPI JSON file or Swagger-generated JSON.
+    /// </summary>
+    Task<string> GenerateCurlCommandAsync(
+        string addressOrFileContents,
+        string operationId,
+        string? baseAddress,
+        CancellationToken cancellationToken = default
+    );
 }
